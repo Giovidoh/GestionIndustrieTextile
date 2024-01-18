@@ -62,12 +62,12 @@ public class Register extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(1200, 700));
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowActivated(java.awt.event.WindowEvent evt) {
-                formWindowActivated(evt);
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(77, 157, 221));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 700));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -80,10 +80,10 @@ public class Register extends javax.swing.JFrame {
 
         jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
-        jLabel2.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel2.setText("Nom");
 
-        jLabel3.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel3.setText("Prénoms");
 
         jLabel5.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
@@ -96,7 +96,7 @@ public class Register extends javax.swing.JFrame {
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton1.setFocusPainted(false);
 
-        jLabel6.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel6.setText("Date de naissance");
 
         jTextField3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -107,7 +107,7 @@ public class Register extends javax.swing.JFrame {
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel8.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel8.setText("Genre");
 
         jRadioButton1.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
@@ -147,7 +147,7 @@ public class Register extends javax.swing.JFrame {
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Designer de mode", "Styliste", "Fabricant" }));
         jComboBox1.setBorder(null);
 
-        jLabel9.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel9.setText("Responsabilité");
 
         jLabel10.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
@@ -158,12 +158,12 @@ public class Register extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(255, 0, 0));
         jLabel11.setText("Veuillez choisir le genre !");
 
-        jLabel4.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel4.setText("Identifiant");
 
         jTextField4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
-        jLabel12.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel12.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel12.setText("Mot de passe");
 
         jTextField5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -272,10 +272,10 @@ public class Register extends javax.swing.JFrame {
                     .addComponent(jLabel15))
                 .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel3.setBackground(new java.awt.Color(77, 157, 221));
         jPanel3.setPreferredSize(new java.awt.Dimension(600, 700));
 
         jButton2.setBackground(new java.awt.Color(204, 255, 255));
@@ -334,7 +334,7 @@ public class Register extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // Rendre invisible les messages d'erreur
         jLabel5.setVisible(false);
         jLabel7.setVisible(false);
@@ -343,7 +343,7 @@ public class Register extends javax.swing.JFrame {
         jLabel13.setVisible(false);
         jLabel14.setVisible(false);
         jLabel15.setVisible(false);
-    }//GEN-LAST:event_formWindowActivated
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments

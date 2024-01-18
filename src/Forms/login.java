@@ -45,12 +45,12 @@ public class Login extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(1200, 700));
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowActivated(java.awt.event.WindowEvent evt) {
-                formWindowActivated(evt);
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(77, 157, 221));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 700));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -62,10 +62,10 @@ public class Login extends javax.swing.JFrame {
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jTextField1.setToolTipText("Entrez votre identifiant");
 
-        jLabel2.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel2.setText("Identifiant");
 
-        jLabel3.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
         jLabel3.setText("Mot de passe");
 
         jLabel4.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
@@ -125,10 +125,10 @@ public class Login extends javax.swing.JFrame {
                 .addComponent(jLabel5)
                 .addGap(81, 81, 81)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(176, Short.MAX_VALUE))
+                .addContainerGap(170, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel3.setBackground(new java.awt.Color(77, 157, 221));
         jPanel3.setPreferredSize(new java.awt.Dimension(600, 700));
 
         jButton2.setBackground(new java.awt.Color(204, 255, 255));
@@ -183,18 +183,18 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        // Rendre invisible les messages d'erreur
-        jLabel4.setVisible(false);
-        jLabel5.setVisible(false);
-    }//GEN-LAST:event_formWindowActivated
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Afficher l'accueil
         super.dispose();
         Home home = new Home();
         home.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // Rendre invisible les messages d'erreur
+        jLabel4.setVisible(false);
+        jLabel5.setVisible(false);
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
