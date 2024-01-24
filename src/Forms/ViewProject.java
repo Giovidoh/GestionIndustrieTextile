@@ -12,14 +12,17 @@ public class ViewProject extends javax.swing.JDialog {
 
     /**
      * Creates new form ViewProject
-     * @param parent
-     * @param modal
      */
     public ViewProject(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
     }
+    
+    // Les titres du formulaire
+    protected String voirTitre = "Voir un projet";
+    protected String ajouterTitre = "Ajouter un projet";
+    protected String modifierTitre = "Modifier un projet";
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -204,6 +207,23 @@ public class ViewProject extends javax.swing.JDialog {
         
         // Changer le titre du formulaire
         jLabel1.setText(Home.projetTitre);
+        
+        // Changer l'état du formulaire en fonction du titre affiché
+        if(jLabel1.getText().equals(voirTitre)){
+            // Désactiver les champs afin de ne pouvoir voir que leurs contenus
+            jTextField1.setEnabled(false);
+            jTextArea1.setEnabled(false);
+            jComboBox1.setEnabled(false);
+            
+            // Cacher le bouton d'enregistrement
+            jButton1.setVisible(false);
+        }else if(jLabel1.getText().equals(ajouterTitre)){
+            // Modifier le texte du bouton d'enregistrement à "Ajouter"
+            jButton1.setText("Ajouter");
+        }else if(jLabel1.getText().equals(modifierTitre)){
+            // Modifier le texte du bouton d'enregistrement à "Modifier"
+            jButton1.setText("Modifier");
+        }
     }//GEN-LAST:event_formWindowOpened
 
     /**

@@ -20,9 +20,15 @@ public class Home extends javax.swing.JFrame {
     
     // Les titres du formulaire de Projets
     public static String projetTitre = "";
-    protected String voirTitre = "Voir un projet";
-    protected String ajouterTitre = "Ajouter un projet";
-    protected String modifierTitre = "Modifier un projet";
+    protected String voirProjet = "Voir un projet";
+    protected String ajouterProjet = "Ajouter un projet";
+    protected String modifierProjet = "Modifier un projet";
+    
+    // Les titres du formulaire d'enregistrement des employés
+    public static String registerTitre = "";
+    protected String voirRegister = "Voir un employé";
+    protected String ajouterRegister = "Enregistrer un employé";
+    protected String modifierRegister = "Modifier un employé";
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -563,6 +569,11 @@ public class Home extends javax.swing.JFrame {
         jButton8.setText("MODIFIER");
         jButton8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton8.setFocusPainted(false);
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jButton9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton9.setText("SUPPRIMER");
@@ -576,6 +587,11 @@ public class Home extends javax.swing.JFrame {
         jButton11.setIconTextGap(10);
         jButton11.setLabel("VOIR");
         jButton11.setPreferredSize(new java.awt.Dimension(133, 32));
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -674,15 +690,9 @@ public class Home extends javax.swing.JFrame {
         jTabbedPane1.setSelectedIndex(0);
     }//GEN-LAST:event_formWindowOpened
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // Afficher la page d'enregistrement d'employé
-        Register register = new Register(this, true);
-        register.setVisible(true);
-    }//GEN-LAST:event_jButton7ActionPerformed
-
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // Changer la variable titre du formulaire de Projets
-        projetTitre = voirTitre;
+        projetTitre = voirProjet;
 
         // Ouvrir le formulaire pour voir le projet sélectionné
         ViewProject view = new ViewProject(this, true);
@@ -691,7 +701,7 @@ public class Home extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // Changer la variable titre du formulaire de Projets
-        projetTitre = ajouterTitre;
+        projetTitre = ajouterProjet;
 
         // Ouvrir le formulaire pour voir le projet sélectionné
         ViewProject view = new ViewProject(this, true);
@@ -700,12 +710,39 @@ public class Home extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // Changer la variable titre du formulaire de Projets
-        projetTitre = modifierTitre;
+        projetTitre = modifierProjet;
 
         // Ouvrir le formulaire pour voir le projet sélectionné
         ViewProject view = new ViewProject(this, true);
         view.setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        // Changer la variable titre du formulaire des Employés
+        registerTitre = voirRegister;
+
+        // Ouvrir le formulaire pour voir l'employé sélectionné
+        Register register = new Register(this, true);
+        register.setVisible(true);
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // Changer la variable titre du formulaire des Employés
+        registerTitre = ajouterRegister;
+
+        // Ouvrir le formulaire pour voir l'employé sélectionné
+        Register register = new Register(this, true);
+        register.setVisible(true);
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        // Changer la variable titre du formulaire des Employés
+        registerTitre = modifierRegister;
+
+        // Ouvrir le formulaire pour voir l'employé sélectionné
+        Register register = new Register(this, true);
+        register.setVisible(true);
+    }//GEN-LAST:event_jButton8ActionPerformed
 
     /**
      * @param args the command line arguments

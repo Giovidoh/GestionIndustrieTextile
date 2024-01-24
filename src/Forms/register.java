@@ -20,6 +20,11 @@ public class Register extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(null);
     }
+    
+    // Les titres du formulaire
+    protected String voirRegister = "Voir un employé";
+    protected String ajouterRegister = "Enregistrer un employé";
+    protected String modifierRegister = "Modifier un employé";
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -76,7 +81,7 @@ public class Register extends javax.swing.JDialog {
         jPanel2.setPreferredSize(new java.awt.Dimension(600, 700));
 
         jLabel1.setFont(new java.awt.Font("Roboto Medium", 1, 24)); // NOI18N
-        jLabel1.setText("Enregistrer un employé");
+        jLabel1.setText("Titre du formulaire des employés");
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
@@ -120,10 +125,20 @@ public class Register extends javax.swing.JDialog {
         jRadioButton1.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
         jRadioButton1.setText("Féminin");
         jRadioButton1.setBorder(null);
+        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton1ActionPerformed(evt);
+            }
+        });
 
         jRadioButton2.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
         jRadioButton2.setText("Masculin");
         jRadioButton2.setBorder(null);
+        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -342,6 +357,31 @@ public class Register extends javax.swing.JDialog {
         jLabel11.setVisible(false);
         jLabel14.setVisible(false);
         jLabel15.setVisible(false);
+        
+        // Changer le titre du formulaire
+        jLabel1.setText(Home.registerTitre);
+        
+        // Changer l'état du formulaire en fonction du titre affiché
+        if(jLabel1.getText().equals(voirRegister)){
+            // Désactiver les champs afin de ne pouvoir voir que leurs contenus
+            jTextField1.setEnabled(false);
+            jTextField2.setEnabled(false);
+            jTextField3.setEnabled(false);
+            jTextField4.setEnabled(false);
+            jTextField5.setEnabled(false);
+            jRadioButton1.setEnabled(false);
+            jRadioButton2.setEnabled(false);
+            jComboBox1.setEnabled(false);
+            
+            // Cacher le bouton d'enregistrement
+            jButton1.setVisible(false);
+        }else if(jLabel1.getText().equals(ajouterRegister)){
+            // Modifier le texte du bouton d'enregistrement à "Enregistrer"
+            jButton1.setText("Enregistrer");
+        }else if(jLabel1.getText().equals(modifierRegister)){
+            // Modifier le texte du bouton d'enregistrement à "Modifier"
+            jButton1.setText("Modifier");
+        }
     }//GEN-LAST:event_formWindowOpened
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -355,6 +395,16 @@ public class Register extends javax.swing.JDialog {
         
         
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+        // Désélectionner le sexe masculin
+        jRadioButton2.setSelected(false);
+    }//GEN-LAST:event_jRadioButton1ActionPerformed
+
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+        // Désélectionner le sexe féminin
+        jRadioButton1.setSelected(false);
+    }//GEN-LAST:event_jRadioButton2ActionPerformed
 
     /**
      * @param args the command line arguments
