@@ -97,6 +97,7 @@ public class Register extends javax.swing.JDialog {
         jLabel5.setForeground(new java.awt.Color(255, 0, 0));
         jLabel5.setText("Veuillez renseigner ce champ !");
 
+        jButton1.setBackground(new java.awt.Color(204, 255, 255));
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton1.setText("Enregistrer");
         jButton1.setBorder(null);
