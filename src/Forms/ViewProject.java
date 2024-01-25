@@ -17,6 +17,30 @@ public class ViewProject extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
+        
+        // Cacher les messages d'erreur
+        jLabel4.setVisible(false);
+        jLabel5.setVisible(false);
+        
+        // Changer le titre du formulaire
+        jLabel1.setText(Home.projetTitre);
+        
+        // Changer l'état du formulaire en fonction du titre affiché
+        if(jLabel1.getText().equals(voirTitre)){
+            // Désactiver les champs afin de ne pouvoir voir que leurs contenus
+            jTextField1.setEnabled(false);
+            jTextArea1.setEnabled(false);
+            jComboBox1.setEnabled(false);
+            
+            // Cacher le bouton d'enregistrement
+            jButton1.setVisible(false);
+        }else if(jLabel1.getText().equals(ajouterTitre)){
+            // Modifier le texte du bouton d'enregistrement à "Ajouter"
+            jButton1.setText("Ajouter");
+        }else if(jLabel1.getText().equals(modifierTitre)){
+            // Modifier le texte du bouton d'enregistrement à "Modifier"
+            jButton1.setText("Modifier");
+        }
     }
     
     // Les titres du formulaire
@@ -50,11 +74,6 @@ public class ViewProject extends javax.swing.JDialog {
         jButton1 = new javax.swing.JButton();
 
         setResizable(false);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
 
         jPanel1.setBackground(new java.awt.Color(77, 157, 221));
 
@@ -199,32 +218,6 @@ public class ViewProject extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        // Cacher les messages d'erreur
-        jLabel4.setVisible(false);
-        jLabel5.setVisible(false);
-        
-        // Changer le titre du formulaire
-        jLabel1.setText(Home.projetTitre);
-        
-        // Changer l'état du formulaire en fonction du titre affiché
-        if(jLabel1.getText().equals(voirTitre)){
-            // Désactiver les champs afin de ne pouvoir voir que leurs contenus
-            jTextField1.setEnabled(false);
-            jTextArea1.setEnabled(false);
-            jComboBox1.setEnabled(false);
-            
-            // Cacher le bouton d'enregistrement
-            jButton1.setVisible(false);
-        }else if(jLabel1.getText().equals(ajouterTitre)){
-            // Modifier le texte du bouton d'enregistrement à "Ajouter"
-            jButton1.setText("Ajouter");
-        }else if(jLabel1.getText().equals(modifierTitre)){
-            // Modifier le texte du bouton d'enregistrement à "Modifier"
-            jButton1.setText("Modifier");
-        }
-    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments

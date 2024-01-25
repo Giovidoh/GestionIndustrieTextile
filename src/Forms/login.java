@@ -16,6 +16,10 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         initComponents();
         this.setLocationRelativeTo(null);
+        
+        // Rendre invisible les messages d'erreur
+        jLabel4.setVisible(false);
+        jLabel5.setVisible(false);
     }
 
     /**
@@ -44,11 +48,6 @@ public class Login extends javax.swing.JFrame {
         setTitle("Se connecter");
         setResizable(false);
         setSize(new java.awt.Dimension(1200, 700));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
 
         jPanel1.setBackground(new java.awt.Color(77, 157, 221));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 700));
@@ -190,12 +189,6 @@ public class Login extends javax.swing.JFrame {
         Home home = new Home();
         home.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        // Rendre invisible les messages d'erreur
-        jLabel4.setVisible(false);
-        jLabel5.setVisible(false);
-    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments

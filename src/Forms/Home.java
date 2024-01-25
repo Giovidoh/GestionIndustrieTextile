@@ -4,6 +4,9 @@
  */
 package Forms;
 
+import java.awt.Color;
+import java.awt.Font;
+
 /**
  *
  * @author HP-PC
@@ -16,6 +19,16 @@ public class Home extends javax.swing.JFrame {
     public Home() {
         initComponents();
         setLocationRelativeTo(null);
+        
+        // Style de tableau
+        
+        jTable1.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 14));
+        jTable1.getTableHeader().setBackground(new Color(77, 157, 221));
+        
+        jTable2.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 14));
+        jTable2.getTableHeader().setBackground(new Color(77, 157, 221));
+        
+        // Fin style de tableau
     }
     
     // Les titres du formulaire de Projets
@@ -455,10 +468,16 @@ public class Home extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jTable1.setFillsViewportHeight(true);
+        jTable1.setFocusable(false);
         jTable1.setRowHeight(40);
         jTable1.setRowMargin(2);
+        jTable1.setSelectionBackground(new java.awt.Color(77, 157, 221));
+        jTable1.setSelectionForeground(new java.awt.Color(255, 255, 255));
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTable1.setShowGrid(false);
+        jTable1.setShowHorizontalLines(true);
         jTable1.getTableHeader().setResizingAllowed(false);
         jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
@@ -583,10 +602,14 @@ public class Home extends javax.swing.JFrame {
             }
         });
         jTable2.setFillsViewportHeight(true);
+        jTable2.setFocusable(false);
         jTable2.setRowHeight(40);
         jTable2.setRowMargin(2);
+        jTable2.setSelectionBackground(new java.awt.Color(77, 157, 221));
+        jTable2.setSelectionForeground(new java.awt.Color(255, 255, 255));
         jTable2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTable2.setShowHorizontalLines(true);
         jTable2.getTableHeader().setResizingAllowed(false);
         jTable2.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(jTable2);
@@ -739,9 +762,8 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(jLabel14)
                     .addComponent(jComboBox2, 0, 500, Short.MAX_VALUE)
                     .addComponent(jLabel7)
-                    .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jSeparator4)
-                        .addComponent(jLabel6))
+                    .addComponent(jSeparator4)
+                    .addComponent(jLabel6)
                     .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel16)
                     .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)

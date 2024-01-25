@@ -19,6 +19,39 @@ public class Register extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
+        
+        // Rendre invisible les messages d'erreur
+        jLabel5.setVisible(false);
+        jLabel7.setVisible(false);
+        jLabel10.setVisible(false);
+        jLabel11.setVisible(false);
+        jLabel14.setVisible(false);
+        jLabel15.setVisible(false);
+        
+        // Changer le titre du formulaire
+        jLabel1.setText(Home.registerTitre);
+        
+        // Changer l'état du formulaire en fonction du titre affiché
+        if(jLabel1.getText().equals(voirRegister)){
+            // Désactiver les champs afin de ne pouvoir voir que leurs contenus
+            jTextField1.setEnabled(false);
+            jTextField2.setEnabled(false);
+            jTextField3.setEnabled(false);
+            jTextField4.setEnabled(false);
+            jTextField5.setEnabled(false);
+            jRadioButton1.setEnabled(false);
+            jRadioButton2.setEnabled(false);
+            jComboBox1.setEnabled(false);
+            
+            // Cacher le bouton d'enregistrement
+            jButton1.setVisible(false);
+        }else if(jLabel1.getText().equals(ajouterRegister)){
+            // Modifier le texte du bouton d'enregistrement à "Enregistrer"
+            jButton1.setText("Enregistrer");
+        }else if(jLabel1.getText().equals(modifierRegister)){
+            // Modifier le texte du bouton d'enregistrement à "Modifier"
+            jButton1.setText("Modifier");
+        }
     }
     
     // Les titres du formulaire
@@ -68,11 +101,6 @@ public class Register extends javax.swing.JDialog {
         setTitle("Enregistrer un employé");
         setResizable(false);
         setSize(new java.awt.Dimension(1200, 700));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
 
         jPanel1.setBackground(new java.awt.Color(77, 157, 221));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 700));
@@ -349,41 +377,6 @@ public class Register extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        // Rendre invisible les messages d'erreur
-        jLabel5.setVisible(false);
-        jLabel7.setVisible(false);
-        jLabel10.setVisible(false);
-        jLabel11.setVisible(false);
-        jLabel14.setVisible(false);
-        jLabel15.setVisible(false);
-        
-        // Changer le titre du formulaire
-        jLabel1.setText(Home.registerTitre);
-        
-        // Changer l'état du formulaire en fonction du titre affiché
-        if(jLabel1.getText().equals(voirRegister)){
-            // Désactiver les champs afin de ne pouvoir voir que leurs contenus
-            jTextField1.setEnabled(false);
-            jTextField2.setEnabled(false);
-            jTextField3.setEnabled(false);
-            jTextField4.setEnabled(false);
-            jTextField5.setEnabled(false);
-            jRadioButton1.setEnabled(false);
-            jRadioButton2.setEnabled(false);
-            jComboBox1.setEnabled(false);
-            
-            // Cacher le bouton d'enregistrement
-            jButton1.setVisible(false);
-        }else if(jLabel1.getText().equals(ajouterRegister)){
-            // Modifier le texte du bouton d'enregistrement à "Enregistrer"
-            jButton1.setText("Enregistrer");
-        }else if(jLabel1.getText().equals(modifierRegister)){
-            // Modifier le texte du bouton d'enregistrement à "Modifier"
-            jButton1.setText("Modifier");
-        }
-    }//GEN-LAST:event_formWindowOpened
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Faire la connexion à la bdd
