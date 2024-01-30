@@ -21,6 +21,7 @@ public class Register extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(null);
         
+        fillFieldsIfExist();
         hideErrorMessages();
         changeFormTitle();
         changeFormStateByTitle();
@@ -222,9 +223,7 @@ public class Register extends javax.swing.JDialog {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(36, 36, 36)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel4)
                     .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -290,7 +289,7 @@ public class Register extends javax.swing.JDialog {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3))
+                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -312,7 +311,7 @@ public class Register extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
                     .addComponent(jLabel15))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(38, 38, 38))
         );
@@ -378,6 +377,23 @@ public class Register extends javax.swing.JDialog {
 
     // MY FUNCTIONS
     
+    private void fillFieldsIfExist(){
+        // Réaffecter les données précédentes dans les champs s'il y en a.
+        if(!surname.isBlank()){
+            jTextField1.setText(surname);
+            jTextField2.setText(firstname);
+            jTextField3.setText(birthDate);
+            if(gender.equals("F")){
+                jRadioButton1.setSelected(true);
+            } else if (gender.equals("M")){
+                jRadioButton2.setSelected(true);
+            }
+            jComboBox1.setSelectedItem(responsibility);
+            jFormattedTextField1.setText(contact);
+            jFormattedTextField2.setText(email);
+        }
+    }
+    
     private void hideErrorMessages() {
         // Rendre invisible les messages d'erreur
         jLabel5.setVisible(false);
@@ -421,17 +437,49 @@ public class Register extends javax.swing.JDialog {
         // Vérifier si les champs sont remplis
         if(jTextField1.getText().isBlank()){
             jLabel5.setVisible(true);
+            jLabel7.setVisible(false);
+            jLabel10.setVisible(false);
+            jLabel11.setVisible(false);
+            jLabel14.setVisible(false);
+            jLabel15.setVisible(false);
         }else if(jTextField2.getText().isBlank()){
+            jLabel5.setVisible(false);
             jLabel7.setVisible(true);
+            jLabel10.setVisible(false);
+            jLabel11.setVisible(false);
+            jLabel14.setVisible(false);
+            jLabel15.setVisible(false);
         }else if(jTextField3.getText().isBlank()){
+            jLabel5.setVisible(false);
+            jLabel7.setVisible(false);
             jLabel10.setVisible(true);
-        }else if (!(jRadioButton1.isSelected() && jRadioButton2.isSelected())){
+            jLabel11.setVisible(false);
+            jLabel14.setVisible(false);
+            jLabel15.setVisible(false);
+        }else if (!(jRadioButton1.isSelected() || jRadioButton2.isSelected())){
+            jLabel5.setVisible(false);
+            jLabel7.setVisible(false);
+            jLabel10.setVisible(false);
             jLabel11.setVisible(true);
+            jLabel14.setVisible(false);
+            jLabel15.setVisible(false);
         }else if (jFormattedTextField1.getText().isBlank()){
+            jLabel5.setVisible(false);
+            jLabel7.setVisible(false);
+            jLabel10.setVisible(false);
+            jLabel11.setVisible(false);
             jLabel14.setVisible(true);
+            jLabel15.setVisible(false);
         }else if (jFormattedTextField2.getText().isBlank()){
+            jLabel5.setVisible(false);
+            jLabel7.setVisible(false);
+            jLabel10.setVisible(false);
+            jLabel11.setVisible(false);
+            jLabel14.setVisible(false);
             jLabel15.setVisible(true);
         } else {
+            hideErrorMessages();
+            
             // Récupérer les informations saisies
             surname = jTextField1.getText();
             firstname = jTextField2.getText();
@@ -468,15 +516,15 @@ public class Register extends javax.swing.JDialog {
         // Si le bouton est "Enregistrer"
         if(jButton1.getText().equals("Enregistrer")){
             // Vérifier si les champs sont remplis
-            // Boolean verify = retrieveFormData();
+            Boolean verify = retrieveFormData();
             
             // Afficher le formulaire de création de compte
-            //if (verify) {
+            if (verify) {
                 super.dispose();
                 Home home = new Home();
                 CreateAccount createAcc = new CreateAccount(home, true);
                 createAcc.setVisible(true);
-            //}
+            }
             
         }
     }//GEN-LAST:event_jButton1ActionPerformed

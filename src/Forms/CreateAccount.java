@@ -8,6 +8,21 @@ import Dao.DatabaseOperation;
 import Dao.ParametreDeConx;
 import Dao.ResultSetTableModel;
 
+import java.sql.ResultSet;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
+// Importations des variables statiques du formulaire d'enregistrement
+// nécessaires à l'enregistrement d'un nouveau compte
+import static Forms.Register.birthDate;
+import static Forms.Register.contact;
+import static Forms.Register.email;
+import static Forms.Register.firstname;
+import static Forms.Register.gender;
+import static Forms.Register.responsibility;
+import static Forms.Register.surname;
+
 /**
  *
  * @author Giovanni
@@ -22,10 +37,16 @@ public class CreateAccount extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(null);
         
-        jLabel5.setVisible(false);
-        jLabel6.setVisible(false);
+        hideErrorMessages();
+        
     }
+    
+    // PROPERTIES
 
+        public static String id = "";
+        public static String pwd = "";
+    
+    // END OF PROPERTIES
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -45,6 +66,7 @@ public class CreateAccount extends javax.swing.JDialog {
         jTextField2 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
 
@@ -90,6 +112,10 @@ public class CreateAccount extends javax.swing.JDialog {
         jLabel5.setForeground(new java.awt.Color(255, 0, 0));
         jLabel5.setText("Veuillez renseigner ce champ !");
 
+        jLabel7.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel7.setText("Cet identifiant est déjà utiliisé par un autre utilisateur !");
+
         jLabel6.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 0, 0));
         jLabel6.setText("Veuillez renseigner ce champ !");
@@ -109,7 +135,8 @@ public class CreateAccount extends javax.swing.JDialog {
                         .addComponent(jLabel3)
                         .addComponent(jLabel1)
                         .addComponent(jTextField2)
-                        .addComponent(jTextField1)))
+                        .addComponent(jTextField1)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(57, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -123,13 +150,15 @@ public class CreateAccount extends javax.swing.JDialog {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
-                .addGap(26, 26, 26)
+                .addGap(1, 1, 1)
+                .addComponent(jLabel7)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
-                .addGap(51, 51, 51)
+                .addGap(39, 39, 39)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(75, Short.MAX_VALUE))
         );
@@ -183,21 +212,111 @@ public class CreateAccount extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // Faire la connexion à la bdd
+    // MY FUNCTIONS
+    
+    private void hideErrorMessages() {
+        // Rendre invisible les messages d'erreur
+        jLabel5.setVisible(false);
+        jLabel6.setVisible(false);
+        jLabel7.setVisible(false);
+    }
+    
+    private Boolean retrieveFormData() {
+        // Vérifier si les champs sont remplis
+        if(jTextField1.getText().isBlank()){
+            jLabel5.setVisible(true);
+            jLabel6.setVisible(false);
+            jLabel6.setVisible(false);
+        }else if(jTextField2.getText().isBlank()){
+            jLabel5.setVisible(false);
+            jLabel6.setVisible(true);
+            jLabel7.setVisible(false);
+        } else {
+            hideErrorMessages();
+            
+            // Récupérer les informations saisies
+            id = jTextField1.getText();
+            pwd = jTextField2.getText();
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private Boolean verifyIfUserCredentialsExist(String id) {
+        Boolean found = false;
+        
+        // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
         String password = ParametreDeConx.PASSWORD_DB;
         DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+        
+        String nomTable = "employe";
+        String whereStatement = "IdEmp=\"" + id + "\"";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+        
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+        
+        if (result.getRowCount() > 0){
+            found = true;
+        }
+        
+        return found;
+    }
+    
+    // END OF MY FUNCTIONS
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Faire la connexion à la bdd
+        
 
         //// Insérer les informations de l'utilisateur
-        // Récupérer les données du formulaire
-        String surname = jTextField1.getText();
-        String firstName = jTextField2.getText();
+        // Récupérer les informations d'identification
+        Boolean verify = retrieveFormData();
+        
+        if (verify){
+            // Vérifier si les informations d'identification existent déjà
+            Boolean verify2 = verifyIfUserCredentialsExist(id);
+            
+            if(verify2){
+                // Afficher le message d'erreur "l'utilisateur existe déjà"
+                jLabel7.setVisible(true);
+            } else {
+                // Renseigner les informations de la bdd
+                String url = ParametreDeConx.HOST_DB;
+                String username = ParametreDeConx.USERNAME_DB;
+                String password = ParametreDeConx.PASSWORD_DB;
+                DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+                
+                // Faire l'enregistrement du nouvel utilisateur
+                String nomTable = "employe";
+                String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "IdEmp", "MdpEmp", "created_at"};
+                
+                // Obtenez la date et l'heure actuelles avec un fuseau horaire spécifique (par exemple, UTC)
+                ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+                
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                
+                String currentDateTimeFormattedString = currentDateTime.format(formatter);
+                
+                String[] contenuTableau = {surname, firstname, birthDate, gender, responsibility, contact, email, id, pwd, currentDateTimeFormattedString};
+                
+                // Appliquer la requête d'insertion
+                String createAccount = operationDb.queryInsert(nomTable, nomColonne, contenuTableau);
+                
+            }
+            
+        }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // Fermer ce formulaire
         super.dispose();
+        
+        // Afficher le formulaire d'enregistrement d'employé
         Home home = new Home();
         Register register = new Register(home, true);
         register.setVisible(true);
@@ -248,6 +367,7 @@ public class CreateAccount extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField jTextField1;

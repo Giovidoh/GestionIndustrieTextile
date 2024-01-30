@@ -7,6 +7,16 @@ package Forms;
 import java.awt.Color;
 import java.awt.Font;
 
+// Importations des variables statiques du formulaire d'enregistrement
+// nécessaires à l'enregistrement d'un nouveau compte
+import static Forms.Register.birthDate;
+import static Forms.Register.contact;
+import static Forms.Register.email;
+import static Forms.Register.firstname;
+import static Forms.Register.gender;
+import static Forms.Register.responsibility;
+import static Forms.Register.surname;
+
 /**
  *
  * @author HP-PC
@@ -797,7 +807,7 @@ public class Home extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("responsables", jPanel12);
 
-        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, -34, 1010, 740));
+        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 0, 1010, 740));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -910,6 +920,16 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // Réinitialiser les variables statiques des données d'enregistrement
+        // d'un employé
+        firstname = "";
+        surname = "";
+        birthDate = "";
+        gender = "";
+        contact = "";
+        email = "";
+        responsibility = "";
+
         // Changer la variable titre du formulaire des Employés
         registerTitre = ajouterRegister;
 

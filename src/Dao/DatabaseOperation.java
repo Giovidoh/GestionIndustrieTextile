@@ -91,7 +91,7 @@ public class DatabaseOperation {
 
         connexionDatabase();
         SQL = "SELECT * FROM " + nomTable;
-        System.out.println(SQL);
+        //System.out.println(SQL);
         return this.executionQuery(SQL);
 
     }
@@ -163,6 +163,8 @@ public class DatabaseOperation {
         }
 
         SQL += ")";
+        
+        System.err.println(SQL);
         return this.executionUpdate(SQL);
 
     }

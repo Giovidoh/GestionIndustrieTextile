@@ -10,7 +10,7 @@ package Dao;
  * @author H
  */
 public class ParametreDeConx {
-    public static final String HOST_DB = "jdbc:mysql://127.0.0.1:3306/calculatrice_java";
+    public static final String HOST_DB = "jdbc:mysql://127.0.0.1:3306/gestion_industrie_textile";
     public static final String USERNAME_DB = "root";
     public static final String PASSWORD_DB = "";// "root"
 }

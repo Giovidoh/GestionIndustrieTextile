@@ -193,7 +193,7 @@ public class Login extends javax.swing.JFrame {
 
         // Afficher l'espace de travail en fonction de l'utilisateur
         super.dispose();
-        String user = "designer";
+        String user = "créateur";
         switch (user) {
             case "créateur" -> {
                 Home home = new Home();
