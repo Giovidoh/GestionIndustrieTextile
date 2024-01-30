@@ -17,9 +17,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         
-        // Rendre invisible les messages d'erreur
-        jLabel4.setVisible(false);
-        jLabel5.setVisible(false);
+        hideErrorMessages();
     }
 
     /**
@@ -183,11 +181,39 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void hideErrorMessages() {
+        // Rendre invisible les messages d'erreur
+        jLabel4.setVisible(false);
+        jLabel5.setVisible(false);
+    }
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // Afficher l'accueil
+        
+        // 
+
+        // Afficher l'espace de travail en fonction de l'utilisateur
         super.dispose();
-        Home home = new Home();
-        home.setVisible(true);
+        String user = "designer";
+        switch (user) {
+            case "créateur" -> {
+                Home home = new Home();
+                home.setVisible(true);
+            }
+            case "designer" -> {
+                HomeDesigner homeDesigner = new HomeDesigner();
+                homeDesigner.setVisible(true);
+            }
+            case "styliste" -> {
+                HomeStylist homeStylist = new HomeStylist();
+                homeStylist.setVisible(true);
+            }
+            case "fabricant" -> {
+                HomeManufacturer homeManufacturer = new HomeManufacturer();
+                homeManufacturer.setVisible(true);
+            }
+            default -> {
+            }
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
