@@ -4,6 +4,12 @@
  */
 package Forms;
 
+import Dao.DatabaseOperation;
+import Dao.ParametreDeConx;
+import Dao.ResultSetTableModel;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author HP-PC
@@ -181,6 +187,69 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // FUNCTIONS
+    
+    
+    private void login(String name, String pwd){
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+        
+        // Vérifier si l'identfiant renseigné est correct
+        String nomTable = "employe";
+        String whereStatement = "IdEmp=\"" + name + "\"";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+        
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+        
+        if(result.getRowCount() > 0){
+            // Vérifier si le mot de passe est correct
+            whereStatement = "IdEmp=\"" + name + "\" AND MdpEmp=\"" + pwd + "\"";
+            rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+            result = new ResultSetTableModel(rs);
+            
+            if(result.getRowCount() > 0){
+                // Type d'utilisateur
+                String userType = result.getValueAt(0, 5).toString();
+                
+                super.dispose();
+                // Si l'utilisateur est un créateur
+                switch (userType) {
+                    case "Créateur" -> {
+                        Home home = new Home();
+                        home.setVisible(true);
+                    }
+                    case "Designer de mode" -> {
+                        HomeDesigner homeDesigner = new HomeDesigner();
+                        homeDesigner.setVisible(true);
+                    }
+                    case "Styliste" -> {
+                        HomeStylist homeStylist = new HomeStylist();
+                        homeStylist.setVisible(true);
+                    }
+                    case "Fabricant" -> {
+                        HomeManufacturer homeManufacturer = new HomeManufacturer();
+                        homeManufacturer.setVisible(true);
+                    }
+                    default -> {
+                    }
+                }
+            } else {
+                jLabel4.setVisible(false);
+                jLabel5.setVisible(true);
+            }
+            
+        }else{
+            jLabel4.setVisible(true);
+            jLabel5.setVisible(false);
+        }
+
+    }
+    
+    // END OF FUNCTIONS
     private void hideErrorMessages() {
         // Rendre invisible les messages d'erreur
         jLabel4.setVisible(false);
@@ -189,10 +258,11 @@ public class Login extends javax.swing.JFrame {
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
-        // 
+        // Connexion
+        login(jTextField1.getText(), jPasswordField1.getText());
 
         // Afficher l'espace de travail en fonction de l'utilisateur
-        super.dispose();
+        /*super.dispose();
         String user = "créateur";
         switch (user) {
             case "créateur" -> {
@@ -213,7 +283,7 @@ public class Login extends javax.swing.JFrame {
             }
             default -> {
             }
-        }
+        }*/
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

@@ -4,6 +4,9 @@
  */
 package Forms;
 
+import Dao.DatabaseOperation;
+import Dao.ParametreDeConx;
+import Dao.ResultSetTableModel;
 import java.awt.Color;
 import java.awt.Font;
 
@@ -16,6 +19,13 @@ import static Forms.Register.firstname;
 import static Forms.Register.gender;
 import static Forms.Register.responsibility;
 import static Forms.Register.surname;
+import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -30,10 +40,19 @@ public class Home extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
+        // Cacher les messages d'erreur
         hideErrorMessages();
+        
+        // Remplir la liste des employés
+        fillTable(jTable2);
         
         tableStyle();
     }
+    
+    // PROPERTIES
+    
+    // Variable de rafraîchissement de la liste des employés
+    public static Boolean reloadEmployeesTable = false;
     
     // Les titres du formulaire de Projets
     public static String projetTitre = "";
@@ -46,6 +65,9 @@ public class Home extends javax.swing.JFrame {
     protected String voirRegister = "Voir un employé";
     protected String ajouterRegister = "Enregistrer un employé";
     protected String modifierRegister = "Modifier un employé";
+    
+    // END OF PROPERTIES
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -118,6 +140,9 @@ public class Home extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(1200, 700));
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
@@ -581,10 +606,7 @@ public class Home extends javax.swing.JFrame {
         jTable2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
                 "N°", "Nom & Prénoms", "Genre", "Age", "Responsabilité"
@@ -807,7 +829,7 @@ public class Home extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("responsables", jPanel12);
 
-        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 0, 1010, 740));
+        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, -34, 1010, 740));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -828,11 +850,13 @@ public class Home extends javax.swing.JFrame {
     // MY FUNCTIONS
     
     private void tableStyle(){
-        jTable1.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 14));
+        jTable1.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 16));
         jTable1.getTableHeader().setBackground(new Color(77, 157, 221));
+        jTable1.setFont( new Font("Segoe UI", Font.PLAIN, 16));
         
-        jTable2.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 14));
+        jTable2.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 16));
         jTable2.getTableHeader().setBackground(new Color(77, 157, 221));
+        jTable1.setFont( new Font("Segoe UI", Font.PLAIN, 16));
     }
     
     private void hideErrorMessages() {
@@ -840,6 +864,79 @@ public class Home extends javax.swing.JFrame {
         jLabel16.setVisible(false);
         jLabel17.setVisible(false);
         jLabel18.setVisible(false);
+    }
+    
+    public void fillTable(JTable table){
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+        
+        // Récupérer les informations à afficher
+        String nomTable = "employe";
+        String whereStatement = "deleted_at IS NULL";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+        
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+        
+        // Modèle qui sera affiché dans la table
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        
+        // Vider le modèle
+        tableModel.setRowCount(0);
+        
+        // Vérifier s'il y a des utilisateurs enregistrés et les afficher dans la table
+        if(result.getRowCount() > 0){
+            for(int i=0; i < result.getRowCount(); i++){
+                
+                Object[] ligne = new Object[5];
+                
+                Object idEmp = result.getValueAt(i, 0).toString();
+                Object surnameEmp = result.getValueAt(i, 1).toString();
+                Object firstnameEmp = result.getValueAt(i, 2).toString();
+                String birthDateEmp = result.getValueAt(i, 3).toString();
+                Object genderEmp = result.getValueAt(i, 4).toString();
+                Object responsibilityEmp = result.getValueAt(i, 5).toString();
+                Object contactEmp = result.getValueAt(i, 6).toString();
+                Object emailEmp = result.getValueAt(i, 7).toString();
+                Object identifiantEmp = result.getValueAt(i, 8).toString();
+                
+                Object address = result.getValueAt(i, 3).toString();
+                
+                ligne[0] = idEmp;
+                ligne[1] = surnameEmp + " " + firstnameEmp;
+                ligne[2] = genderEmp;
+                
+                // Calculer l'âge de l'employé
+                String year = birthDateEmp.substring(0, 4);
+                String month = birthDateEmp.substring(5, 7);
+                String day = birthDateEmp.substring(8, 10);
+                int yearInt = Integer.parseInt(year);
+                int monthInt = Integer.parseInt(month);
+                int dayInt = Integer.parseInt(day);
+                LocalDate date = LocalDate.of(yearInt, monthInt, dayInt);
+                LocalDate currentDateTime = ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
+                
+                Period period = Period.between(date, currentDateTime);
+                
+                int age = period.getYears();
+                
+                ligne[3] = age;
+                
+                ligne[4] = responsibilityEmp;
+                
+                // table.setValueAt(idEmp, i, 0);
+                // table.setValueAt(familyName, i, 1);
+                // table.setValueAt(firstName, i, 2);
+                // table.setValueAt(address, i, 3);
+                
+                tableModel.addRow(ligne);
+            }
+            
+            table.setModel(tableModel);
+            
+        }
     }
     
     // END OF MY FUNCTIONS
@@ -957,6 +1054,14 @@ public class Home extends javax.swing.JFrame {
         // Choisir le panel approprié
         jTabbedPane1.setSelectedIndex(3);
     }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // Raffraîchir la liste des employés si le raffraîchissement est vrai
+        if (reloadEmployeesTable) {
+            fillTable(jTable2);
+            reloadEmployeesTable = false;
+        }
+    }//GEN-LAST:event_formWindowActivated
 
     /**
      * @param args the command line arguments

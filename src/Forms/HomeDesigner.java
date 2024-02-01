@@ -383,6 +383,11 @@ public class HomeDesigner extends javax.swing.JFrame {
         jButton4.setText("CHOISIR LES DESIGNERS");
         jButton4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton4.setFocusPainted(false);
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setBackground(new java.awt.Color(0, 255, 204));
         jButton5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -567,6 +572,7 @@ public class HomeDesigner extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
         // Changer la couleur
         jButton1.setContentAreaFilled(true);
         jButton2.setContentAreaFilled(false);
@@ -601,6 +607,12 @@ public class HomeDesigner extends javax.swing.JFrame {
         jButton1.setContentAreaFilled(true);
         jTabbedPane1.setSelectedIndex(0);
     }//GEN-LAST:event_formWindowOpened
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // Formulaire de choix des designers assignés au projet
+        ChooseDesignerForProject chooseDesignerForProject = new ChooseDesignerForProject(this, true);
+        chooseDesignerForProject.setVisible(true);
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -9,9 +9,15 @@ import Dao.ParametreDeConx;
 import Dao.ResultSetTableModel;
 
 import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.Period;
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 // Importations des variables statiques du formulaire d'enregistrement
 // nécessaires à l'enregistrement d'un nouveau compte
@@ -269,9 +275,6 @@ public class CreateAccount extends javax.swing.JDialog {
     // END OF MY FUNCTIONS
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // Faire la connexion à la bdd
-        
-
         //// Insérer les informations de l'utilisateur
         // Récupérer les informations d'identification
         Boolean verify = retrieveFormData();
@@ -306,6 +309,14 @@ public class CreateAccount extends javax.swing.JDialog {
                 // Appliquer la requête d'insertion
                 String createAccount = operationDb.queryInsert(nomTable, nomColonne, contenuTableau);
                 
+                // Message de succès de l'enregistrement de l'utilisateur
+                JOptionPane.showMessageDialog(this, "Utilisateur enregistré avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Raffraîchir la liste des employés
+                Home.reloadEmployeesTable = true;
+                
+                // Retourner à la liste des employés
+                super.dispose();
             }
             
         }
