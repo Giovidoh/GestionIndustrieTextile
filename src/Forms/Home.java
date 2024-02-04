@@ -12,6 +12,7 @@ import java.awt.Font;
 
 // Importations des variables statiques du formulaire d'enregistrement
 // nécessaires à l'enregistrement d'un nouveau compte
+import static Forms.Register.id;
 import static Forms.Register.birthDate;
 import static Forms.Register.contact;
 import static Forms.Register.email;
@@ -1029,13 +1030,7 @@ public class Home extends javax.swing.JFrame {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // Réinitialiser les variables statiques des données d'enregistrement
         // d'un employé
-        firstname = "";
-        surname = "";
-        birthDate = "";
-        gender = "";
-        contact = "";
-        email = "";
-        responsibility = "";
+        
 
         // Changer la variable titre du formulaire des Employés
         registerTitre = ajouterRegister;
@@ -1052,6 +1047,7 @@ public class Home extends javax.swing.JFrame {
         // Ouvrir le formulaire pour voir l'employé sélectionné
         Register register = new Register(this, true);
         register.setVisible(true);
+        
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
@@ -1077,7 +1073,7 @@ public class Home extends javax.swing.JFrame {
         //// Récupérer les informations de l'utilisateur sélectionné
         // Récupérer l'ID de l'utilisateur
         int ligne = jTable2.getSelectedRow();
-        String id = jTable2.getValueAt(ligne, 0).toString();
+        String idEmp = jTable2.getValueAt(ligne, 0).toString();
         
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
@@ -1087,13 +1083,12 @@ public class Home extends javax.swing.JFrame {
         
         // Récupérer les informations à afficher
         String nomTable = "employe";
-        String whereStatement = "Id = \"" + id + "\"";
+        String whereStatement = "Id = \"" + idEmp + "\"";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
         
         ResultSetTableModel result = new ResultSetTableModel(rs);
         
         if(result.getRowCount() > 0){
-            String idEmp = result.getValueAt(0, 0).toString();
             String surnameEmp = result.getValueAt(0, 1).toString();
             String firstnameEmp = result.getValueAt(0, 2).toString();
             String birthDateEmp = result.getValueAt(0, 3).toString();
@@ -1103,6 +1098,7 @@ public class Home extends javax.swing.JFrame {
             String emailEmp = result.getValueAt(0, 7).toString();
             
             // Affecter les informations de l'utilisateur dans les variables statiques
+            id = idEmp;
             firstname = firstnameEmp;
             surname = surnameEmp;
             birthDate = birthDateEmp;
@@ -1114,8 +1110,8 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable2MousePressed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // Demander la confirmation de suppression
-        Delete delete = new Delete(this, true);
+        // Demander la confirmation de suppression de l'employé
+        DeleteEmployee delete = new DeleteEmployee(this, true);
         delete.setVisible(true);
     }//GEN-LAST:event_jButton9ActionPerformed
 

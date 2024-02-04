@@ -6,6 +6,10 @@ package Forms;
 
 import Dao.ParametreDeConx;
 import Dao.DatabaseOperation;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -36,6 +40,7 @@ public class Register extends javax.swing.JDialog {
         protected String modifierRegister = "Modifier un employé";
         
         // Les données entrées dans le formulaire
+        public static String id = "";
         public static String surname = "";
         public static String firstname = "";
         public static String birthDate = "";
@@ -499,6 +504,18 @@ public class Register extends javax.swing.JDialog {
         return false;
     }
     
+    public static void clearEmployeeInfos(){
+        // Vider les informations de l'employé
+        id = "";
+        firstname = "";
+        surname = "";
+        birthDate = "";
+        gender = "";
+        contact = "";
+        email = "";
+        responsibility = "";
+    }
+    
     // END OF MY FUNCTIONS
     
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
@@ -525,7 +542,57 @@ public class Register extends javax.swing.JDialog {
                 CreateAccount createAcc = new CreateAccount(home, true);
                 createAcc.setVisible(true);
             }
+        }else if(jButton1.getText().equals("Modifier")){
+            // Si le bouton est "Modifier"
+
+            //// Modifier l'employé
+            // Renseigner les informations de la bdd
+            String url = ParametreDeConx.HOST_DB;
+            String username = ParametreDeConx.USERNAME_DB;
+            String password = ParametreDeConx.PASSWORD_DB;
+            DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+            // Faire la modification
+            String nomTable = "employe";
+            String whereStatement = "Id = \"" + id + "\" AND " + "deleted_at IS NULL";
+            String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "updated_at"};
             
+            String nomEmp = jTextField1.getText();
+            String prenomEmp = jTextField2.getText();
+            String dateNaisEmp = jTextField3.getText();
+            String genreEmp = "";
+            if(jRadioButton1.isSelected()){
+                genreEmp = "F";
+            } else if (jRadioButton2.isSelected()){
+                genreEmp = "M";
+            }
+            String respoEmp = (String) jComboBox1.getSelectedItem();
+            String contactEmp = jFormattedTextField1.getText();
+            String emailEmp = jFormattedTextField2.getText();
+
+            // Date et heure actuelle
+            ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            String currentDateTimeFormattedString = currentDateTime.format(formatter);
+
+            String[] contenuTableau = {nomEmp, prenomEmp, dateNaisEmp, genreEmp, respoEmp, contactEmp, emailEmp, currentDateTimeFormattedString};
+
+            // Appliquer la suppression logique
+            String rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau, whereStatement);
+
+            // Message de succès de la modification de l'utilisateur
+            JOptionPane.showMessageDialog(this, "Utilisateur modifié avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+
+            // Raffraîchir la liste des employés
+            Home.reloadEmployeesTable = true;
+            
+            // Vider les informations de l'employé
+            clearEmployeeInfos();
+
+            // Retourner à la liste des employés
+            super.dispose();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
