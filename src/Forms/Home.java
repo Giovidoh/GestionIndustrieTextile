@@ -638,6 +638,11 @@ public class Home extends javax.swing.JFrame {
         jTable2.setShowHorizontalLines(true);
         jTable2.getTableHeader().setResizingAllowed(false);
         jTable2.getTableHeader().setReorderingAllowed(false);
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTable2MousePressed(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTable2);
 
         jButton7.setBackground(new java.awt.Color(204, 255, 204));
@@ -667,6 +672,11 @@ public class Home extends javax.swing.JFrame {
         jButton9.setText("SUPPRIMER");
         jButton9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton9.setFocusPainted(false);
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         jButton11.setBackground(new java.awt.Color(204, 204, 255));
         jButton11.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -829,7 +839,7 @@ public class Home extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("responsables", jPanel12);
 
-        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, -34, 1010, 740));
+        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 0, 1010, 740));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1062,6 +1072,52 @@ public class Home extends javax.swing.JFrame {
             reloadEmployeesTable = false;
         }
     }//GEN-LAST:event_formWindowActivated
+
+    private void jTable2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MousePressed
+        //// Récupérer les informations de l'utilisateur sélectionné
+        // Récupérer l'ID de l'utilisateur
+        int ligne = jTable2.getSelectedRow();
+        String id = jTable2.getValueAt(ligne, 0).toString();
+        
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+        
+        // Récupérer les informations à afficher
+        String nomTable = "employe";
+        String whereStatement = "Id = \"" + id + "\"";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+        
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+        
+        if(result.getRowCount() > 0){
+            String idEmp = result.getValueAt(0, 0).toString();
+            String surnameEmp = result.getValueAt(0, 1).toString();
+            String firstnameEmp = result.getValueAt(0, 2).toString();
+            String birthDateEmp = result.getValueAt(0, 3).toString();
+            String genderEmp = result.getValueAt(0, 4).toString();
+            String responsibilityEmp = result.getValueAt(0, 5).toString();
+            String contactEmp = result.getValueAt(0, 6).toString();
+            String emailEmp = result.getValueAt(0, 7).toString();
+            
+            // Affecter les informations de l'utilisateur dans les variables statiques
+            firstname = firstnameEmp;
+            surname = surnameEmp;
+            birthDate = birthDateEmp;
+            gender = genderEmp;
+            responsibility = responsibilityEmp;
+            contact = contactEmp;
+            email = emailEmp;
+        }
+    }//GEN-LAST:event_jTable2MousePressed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        // Demander la confirmation de suppression
+        Delete delete = new Delete(this, true);
+        delete.setVisible(true);
+    }//GEN-LAST:event_jButton9ActionPerformed
 
     /**
      * @param args the command line arguments
