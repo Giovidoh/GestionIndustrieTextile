@@ -29,6 +29,9 @@ import static Forms.Register.gender;
 import static Forms.Register.responsibility;
 import static Forms.Register.surname;
 
+import static Forms.AlertSuccess.AlertSuccessTitle;
+import static Forms.AlertSuccess.AlertSuccessMessage;
+
 /**
  *
  * @author Giovanni
@@ -295,7 +298,7 @@ public class CreateAccount extends javax.swing.JDialog {
                 
                 // Faire l'enregistrement du nouvel utilisateur
                 String nomTable = "employe";
-                String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "IdEmp", "MdpEmp", "created_at"};
+                String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "IdEmp", "MdpEmp", "created_at", "updated_at"};
                 
                 // Obtenez la date et l'heure actuelles avec un fuseau horaire spécifique (par exemple, UTC)
                 ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -304,19 +307,26 @@ public class CreateAccount extends javax.swing.JDialog {
                 
                 String currentDateTimeFormattedString = currentDateTime.format(formatter);
                 
-                String[] contenuTableau = {surname, firstname, birthDate, gender, responsibility, contact, email, id, pwd, currentDateTimeFormattedString};
+                String[] contenuTableau = {surname, firstname, birthDate, gender, responsibility, contact, email, id, pwd, currentDateTimeFormattedString, currentDateTimeFormattedString};
                 
                 // Appliquer la requête d'insertion
                 String createAccount = operationDb.queryInsert(nomTable, nomColonne, contenuTableau);
                 
                 // Message de succès de l'enregistrement de l'utilisateur
-                JOptionPane.showMessageDialog(this, "Utilisateur enregistré avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                AlertSuccessTitle = "Enregistré";
+                AlertSuccessMessage = "Utilisateur enregistré avec succès !";
+                
                 
                 // Raffraîchir la liste des employés
                 Home.reloadEmployeesTable = true;
                 
                 // Retourner à la liste des employés
                 super.dispose();
+                
+                // Afficher le message de succès
+                Home home = new Home();
+                AlertSuccess alert = new AlertSuccess(home, true);
+                alert.setVisible(true);
             }
             
         }

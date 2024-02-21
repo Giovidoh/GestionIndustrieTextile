@@ -28,6 +28,9 @@ import java.time.ZonedDateTime;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import static Forms.AlertWarning.AlertWarningTitle;
+import static Forms.AlertWarning.AlertWarningMessage;
+
 /**
  *
  * @author HP-PC
@@ -85,6 +88,7 @@ public class Home extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
+        jButton14 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -164,7 +168,6 @@ public class Home extends javax.swing.JFrame {
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton1.setHideActionText(true);
         jButton1.setIconTextGap(20);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -179,7 +182,6 @@ public class Home extends javax.swing.JFrame {
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton2.setHideActionText(true);
         jButton2.setIconTextGap(25);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -194,7 +196,6 @@ public class Home extends javax.swing.JFrame {
         jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton3.setHideActionText(true);
         jButton3.setIconTextGap(14);
-        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -208,10 +209,23 @@ public class Home extends javax.swing.JFrame {
         jButton12.setContentAreaFilled(false);
         jButton12.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton12.setHideActionText(true);
-        jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton12.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton12ActionPerformed(evt);
+            }
+        });
+
+        jButton14.setBackground(new java.awt.Color(153, 204, 255));
+        jButton14.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton14.setForeground(new java.awt.Color(255, 102, 102));
+        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-sortie-50.png"))); // NOI18N
+        jButton14.setText("Déconnexion");
+        jButton14.setContentAreaFilled(false);
+        jButton14.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton14.setHideActionText(true);
+        jButton14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton14ActionPerformed(evt);
             }
         });
 
@@ -225,7 +239,8 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -239,7 +254,9 @@ public class Home extends javax.swing.JFrame {
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(361, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(280, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 700));
@@ -629,7 +646,8 @@ public class Home extends javax.swing.JFrame {
             }
         });
         jTable2.setFillsViewportHeight(true);
-        jTable2.setFocusable(false);
+        jTable2.setNextFocusableComponent(jButton7);
+        jTable2.setRequestFocusEnabled(false);
         jTable2.setRowHeight(40);
         jTable2.setRowMargin(2);
         jTable2.setSelectionBackground(new java.awt.Color(77, 157, 221));
@@ -1030,7 +1048,14 @@ public class Home extends javax.swing.JFrame {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // Réinitialiser les variables statiques des données d'enregistrement
         // d'un employé
-        
+        id = "";
+        birthDate = "";
+        contact = "";
+        email = "";
+        firstname = "";
+        gender = "";
+        responsibility = "";
+        surname = "";
 
         // Changer la variable titre du formulaire des Employés
         registerTitre = ajouterRegister;
@@ -1041,12 +1066,22 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // Changer la variable titre du formulaire des Employés
-        registerTitre = modifierRegister;
+        // Vérifier si une ligne de la table est sélectionnée
+        int selectedRow = jTable2.getSelectedRow();
+        if(selectedRow != -1){
+           // Changer la variable titre du formulaire des Employés
+           registerTitre = modifierRegister;
 
-        // Ouvrir le formulaire pour voir l'employé sélectionné
-        Register register = new Register(this, true);
-        register.setVisible(true);
+           // Ouvrir le formulaire pour voir l'employé sélectionné
+           Register register = new Register(this, true);
+           register.setVisible(true);
+        } else {
+            // Envoyer un message d'alerte
+            AlertWarningTitle = "Attention";
+            AlertWarningMessage = "Veuillez choisir l'employé à modifier !";
+            AlertWarning alert = new AlertWarning(this, true);
+            alert.setVisible(true);
+        }
         
     }//GEN-LAST:event_jButton8ActionPerformed
 
@@ -1115,6 +1150,13 @@ public class Home extends javax.swing.JFrame {
         delete.setVisible(true);
     }//GEN-LAST:event_jButton9ActionPerformed
 
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        // Retourner à la page de connexion
+        super.dispose();
+        Login login = new Login();
+        login.setVisible(true);
+    }//GEN-LAST:event_jButton14ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1156,6 +1198,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
