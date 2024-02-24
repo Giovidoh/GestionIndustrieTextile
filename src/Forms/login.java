@@ -8,6 +8,9 @@ import Dao.DatabaseOperation;
 import Dao.ParametreDeConx;
 import Dao.ResultSetTableModel;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -187,10 +190,23 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // PROPERTIES
+    
+    // Variables statiques de l'identifiant de l'utilisateur
+    public static String UserId;
+    public static String UserName;
+    
+    // END OF PROPERTIES
+    
     // FUNCTIONS
     
+    private void hideErrorMessages() {
+        // Rendre invisible les messages d'erreur
+        jLabel4.setVisible(false);
+        jLabel5.setVisible(false);
+    }
     
-    private void login(String name, String pwd){
+    public void login(String name, String pwd) throws SQLException{
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
@@ -199,14 +215,17 @@ public class Login extends javax.swing.JFrame {
         
         // Vérifier si l'identfiant renseigné est correct
         String nomTable = "employe";
-        String whereStatement = "IdEmp=\"" + name + "\"";
+        String whereStatement = "IdEmp=\"" + name + "\""
+                                + " AND deleted_at IS NULL";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
         
         ResultSetTableModel result = new ResultSetTableModel(rs);
         
         if(result.getRowCount() > 0){
             // Vérifier si le mot de passe est correct
-            whereStatement = "IdEmp=\"" + name + "\" AND MdpEmp=\"" + pwd + "\"";
+            whereStatement = "IdEmp=\"" + name + "\""
+                            + " AND MdpEmp=\"" + pwd + "\""
+                            + " AND deleted_at IS NULL";
             rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
 
             result = new ResultSetTableModel(rs);
@@ -214,6 +233,10 @@ public class Login extends javax.swing.JFrame {
             if(result.getRowCount() > 0){
                 // Type d'utilisateur
                 String userType = result.getValueAt(0, 5).toString();
+                
+                // Enregistrer les identifiants de l'utilisateur connecté
+                UserName = name;
+                UserId = rs.getString("Id");
                 
                 super.dispose();
                 // Si l'utilisateur est un créateur
@@ -246,44 +269,20 @@ public class Login extends javax.swing.JFrame {
             jLabel4.setVisible(true);
             jLabel5.setVisible(false);
         }
+        
+        operationDb.closeconnexion();
 
     }
     
     // END OF FUNCTIONS
-    private void hideErrorMessages() {
-        // Rendre invisible les messages d'erreur
-        jLabel4.setVisible(false);
-        jLabel5.setVisible(false);
-    }
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
-        // Connexion
-        login(jTextField1.getText(), jPasswordField1.getText());
-
-        // Afficher l'espace de travail en fonction de l'utilisateur
-        /*super.dispose();
-        String user = "créateur";
-        switch (user) {
-            case "créateur" -> {
-                Home home = new Home();
-                home.setVisible(true);
-            }
-            case "designer" -> {
-                HomeDesigner homeDesigner = new HomeDesigner();
-                homeDesigner.setVisible(true);
-            }
-            case "styliste" -> {
-                HomeStylist homeStylist = new HomeStylist();
-                homeStylist.setVisible(true);
-            }
-            case "fabricant" -> {
-                HomeManufacturer homeManufacturer = new HomeManufacturer();
-                homeManufacturer.setVisible(true);
-            }
-            default -> {
-            }
-        }*/
+        try {
+            // Connexion
+            login(jTextField1.getText(), jPasswordField1.getText());
+        } catch (SQLException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

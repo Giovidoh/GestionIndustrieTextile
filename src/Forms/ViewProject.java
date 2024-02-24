@@ -4,6 +4,28 @@
  */
 package Forms;
 
+import Dao.DatabaseOperation;
+import Dao.ParametreDeConx;
+import Dao.ResultSetTableModel;
+import static Forms.AlertSuccess.AlertSuccessMessage;
+import static Forms.AlertSuccess.AlertSuccessTitle;
+import static Forms.CreateAccount.id;
+import static Forms.CreateAccount.pwd;
+
+import static Forms.Home.reloadProjectsTable;
+
+import java.sql.ResultSet;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Giovanni
@@ -17,37 +39,42 @@ public class ViewProject extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
-        
-        // Cacher les messages d'erreur
-        jLabel4.setVisible(false);
-        jLabel5.setVisible(false);
-        
+
+        hideErrorMessages();
+
         // Changer le titre du formulaire
         jLabel1.setText(Home.projetTitre);
-        
+
         // Changer l'état du formulaire en fonction du titre affiché
-        if(jLabel1.getText().equals(voirTitre)){
+        if (jLabel1.getText().equals(voirTitre)) {
             // Désactiver les champs afin de ne pouvoir voir que leurs contenus
             jTextField1.setEnabled(false);
             jTextArea1.setEnabled(false);
             jComboBox1.setEnabled(false);
-            
+
             // Cacher le bouton d'enregistrement
             jButton1.setVisible(false);
-        }else if(jLabel1.getText().equals(ajouterTitre)){
+        } else if (jLabel1.getText().equals(ajouterTitre)) {
             // Modifier le texte du bouton d'enregistrement à "Ajouter"
             jButton1.setText("Ajouter");
-        }else if(jLabel1.getText().equals(modifierTitre)){
+        } else if (jLabel1.getText().equals(modifierTitre)) {
             // Modifier le texte du bouton d'enregistrement à "Modifier"
             jButton1.setText("Modifier");
         }
     }
-    
+
+    // PROPERTIES
     // Les titres du formulaire
     protected String voirTitre = "Voir un projet";
     protected String ajouterTitre = "Ajouter un projet";
     protected String modifierTitre = "Modifier un projet";
 
+    // Variables statiques nom et description du projet
+    private static String nom;
+    private static String description;
+    private static String statut;
+
+    // END OF PROPERTIES
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -72,6 +99,9 @@ public class ViewProject extends javax.swing.JDialog {
         jLabel6 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
 
         setResizable(false);
 
@@ -144,6 +174,29 @@ public class ViewProject extends javax.swing.JDialog {
         jButton1.setBorder(null);
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton1.setFocusPainted(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jButton3.setText("Importer");
+        jButton3.setBorder(null);
+        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton3.setFocusPainted(false);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Roboto Medium", 0, 16)); // NOI18N
+        jLabel7.setText("Images");
+
+        jLabel8.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel8.setText("Ce nom est déjà utilisé pour un autre projet !");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -151,17 +204,21 @@ public class ViewProject extends javax.swing.JDialog {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(55, 55, 55)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField1)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
-                    .addComponent(jLabel6)
-                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel7)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel3)
+                        .addComponent(jLabel2)
+                        .addComponent(jLabel1)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                        .addComponent(jLabel6)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextField1)
+                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(52, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -173,21 +230,27 @@ public class ViewProject extends javax.swing.JDialog {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(0, 0, 0)
+                .addComponent(jLabel8)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(86, 86, 86)
+                .addGap(31, 31, 31)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(49, 49, 49))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -197,7 +260,7 @@ public class ViewProject extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 557, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -218,6 +281,156 @@ public class ViewProject extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    // FUNCTIONS
+    private void hideErrorMessages() {
+        // Cacher les messages d'erreur
+        jLabel4.setVisible(false);
+        jLabel5.setVisible(false);
+        jLabel8.setVisible(false);
+    }
+
+    private Boolean retrieveFormData() {
+        // Vérifier si les champs sont remplis
+        if (jTextField1.getText().isBlank()) {
+            jLabel4.setVisible(true);
+            jLabel8.setVisible(false);
+            jLabel5.setVisible(false);
+        } else if (jTextArea1.getText().isBlank()) {
+            jLabel4.setVisible(false);
+            jLabel8.setVisible(true);
+            jLabel5.setVisible(false);
+        } else {
+            hideErrorMessages();
+
+            // Récupérer les informations saisies
+            nom = jTextField1.getText().replace("\"", "\\\"");
+            description = jTextArea1.getText().replace("\"", "\\\"");
+            statut = (String) jComboBox1.getSelectedItem();
+            statut = statut.replace("\"", "\\\"");
+            return true;
+        }
+
+        return false;
+    }
+
+    private Boolean verifyIfProjectNameExists(String nom) {
+        Boolean found = false;
+
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        // Vérifier si un projet avec le même nom existe déjà
+        String nomTable = "projet";
+        String whereStatement = "NomProjet = \"" + nom
+                + "\" AND deleted_at IS NULL";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+        if (result.getRowCount() > 0) {
+            found = true;
+        }
+        
+        operationDb.closeconnexion();
+
+        return found;
+    }
+
+    // END OF FUNCTIONS
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setMultiSelectionEnabled(true); // Autorise la sélection multiple
+
+        // Créer un filtre pour n'afficher que les fichiers avec les extensions d'images courantes
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Images", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filter);
+
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File[] selectedFiles = fileChooser.getSelectedFiles();
+
+            // Ici, vous pouvez traiter les fichiers sélectionnés
+            for (File file : selectedFiles) {
+                // Insérez votre logique pour ajouter les fichiers à la base de données
+                System.out.println("Fichier sélectionné : " + file.getAbsolutePath());
+            }
+        }
+
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
+        // Si le bouton est "Enregistrer"
+        if (jButton1.getText().equals("Ajouter")) {
+            // Récupérer les informations du projet
+            Boolean retrieve = retrieveFormData();
+
+            if (retrieve) {
+                // Vérifier si un même nom de projet existe déjà
+                Boolean verify = verifyIfProjectNameExists(nom);
+                if (verify) {
+                    // Afficher le message d'erreur d'un nom déjà existant
+                    jLabel8.setVisible(true);
+                } else {
+                    // Renseigner les informations de la bdd
+                    String url = ParametreDeConx.HOST_DB;
+                    String username = ParametreDeConx.USERNAME_DB;
+                    String password = ParametreDeConx.PASSWORD_DB;
+                    DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+                    
+                    try {
+                        // Faire l'enregistrement du nouveau projet
+                        String nomTable = "projet";
+                        String[] nomColonne = {"NomProjet", "DescriptionProjet", "StatutProjet", "IdCreateur", "created_at", "updated_at"};
+
+                        // Obtenir la date et l'heure actuelles avec un fuseau horaire spécifique (par exemple, UTC)
+                        ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                        String currentDateTimeFormattedString = currentDateTime.format(formatter);
+
+                        String[] contenuTableau = {nom, description, statut, Login.UserId, currentDateTimeFormattedString, currentDateTimeFormattedString};
+
+                        System.out.println(Login.UserId + " " + Login.UserName);
+
+                        // Appliquer la requête d'insertion
+                        String createProject = operationDb.queryInsertPrecise(nomTable, nomColonne, contenuTableau);
+
+                        // Vider les champs et ramener le curseur au premier champ
+                        jTextField1.setText("");
+                        jTextArea1.setText("");
+                        jTextField1.requestFocusInWindow();
+
+                        // Raffraîchir la liste des projets
+                        reloadProjectsTable = true;
+
+                        // Message de succès de l'enregistrement du projet
+                        AlertSuccessTitle = "Enregistré";
+                        AlertSuccessMessage = "Projet enregistré avec succès !";
+
+                        // Afficher le message de succès d'enregistrement
+                        Home home = new Home();
+                        AlertSuccess alert = new AlertSuccess(home, true);
+                        alert.setVisible(true);
+
+                        operationDb.closeconnexion();
+                    } catch (SQLException ex) {
+                        operationDb.closeconnexion();
+                        Logger.getLogger(ViewProject.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            }
+        } else if (jButton1.getText().equals("Modifier")) {
+            // Si le bouton est "Modifier" faire la modification du projet sélectionné
+        }
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -257,6 +470,7 @@ public class ViewProject extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -264,6 +478,8 @@ public class ViewProject extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

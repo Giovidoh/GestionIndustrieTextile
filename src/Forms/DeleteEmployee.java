@@ -17,6 +17,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 
+import static Forms.AlertSuccess.AlertSuccessTitle;
+import static Forms.AlertSuccess.AlertSuccessMessage;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Giovanni
@@ -138,41 +144,51 @@ public class DeleteEmployee extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        //// Effectuer une suppression logique de l'employés
-        // Renseigner les informations de la bdd
-        String url = ParametreDeConx.HOST_DB;
-        String username = ParametreDeConx.USERNAME_DB;
-        String password = ParametreDeConx.PASSWORD_DB;
-        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-        
-        // Faire la suppression logique
-        String nomTable = "employe";
-        String whereStatement = "Id = \"" + id + "\" AND " + "deleted_at IS NULL";
-        String[] nomColonne = {"updated_at", "deleted_at"};
-        
-        // Date et heure actuelle
-        ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
-                
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        String currentDateTimeFormattedString = currentDateTime.format(formatter);
-        
-        String[] contenuTableau = {currentDateTimeFormattedString, currentDateTimeFormattedString};
-        
-        // Appliquer la suppression logique
-        String rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau, whereStatement);
-        
-        // Message de succès de la suppression de l'utilisateur
-        JOptionPane.showMessageDialog(this, "Utilisateur supprimé avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
-
-        // Raffraîchir la liste des employés
-        Home.reloadEmployeesTable = true;
-        
-        // Vider les informations de l'employé
-        clearEmployeeInfos();
-
-        // Retourner à la liste des employés
-        super.dispose();
+        try {
+            //// Effectuer une suppression logique de l'employés
+            // Renseigner les informations de la bdd
+            String url = ParametreDeConx.HOST_DB;
+            String username = ParametreDeConx.USERNAME_DB;
+            String password = ParametreDeConx.PASSWORD_DB;
+            DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+            
+            // Faire la suppression logique
+            String nomTable = "employe";
+            String whereStatement = "Id = \"" + id + "\" AND " + "deleted_at IS NULL";
+            String[] nomColonne = {"updated_at", "deleted_at"};
+            
+            // Date et heure actuelle
+            ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            
+            String currentDateTimeFormattedString = currentDateTime.format(formatter);
+            
+            String[] contenuTableau = {currentDateTimeFormattedString, currentDateTimeFormattedString};
+            
+            // Appliquer la suppression logique
+            String rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau, whereStatement);
+            
+            // Message de succès de la suppression de l'utilisateur
+            AlertSuccessTitle = "Succès";
+            AlertSuccessMessage = "Utilisateur supprimé avec succès !";
+            
+            // Raffraîchir la liste des employés
+            Home.reloadEmployeesTable = true;
+            
+            // Vider les informations de l'employé
+            clearEmployeeInfos();
+            
+            // Retourner à la liste des employés
+            super.dispose();
+             
+            // Afficher le message de succès
+            Home home = new Home();
+            AlertSuccess alert = new AlertSuccess(home, true);
+            alert.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(DeleteEmployee.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -6,9 +6,12 @@ package Forms;
 
 import Dao.ParametreDeConx;
 import Dao.DatabaseOperation;
+import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -537,10 +540,14 @@ public class Register extends javax.swing.JDialog {
             
             // Afficher le formulaire de création de compte
             if (verify) {
-                super.dispose();
-                Home home = new Home();
-                CreateAccount createAcc = new CreateAccount(home, true);
-                createAcc.setVisible(true);
+                try {
+                    super.dispose();
+                    Home home = new Home();
+                    CreateAccount createAcc = new CreateAccount(home, true);
+                    createAcc.setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }else if(jButton1.getText().equals("Modifier")){
             // Si le bouton est "Modifier"

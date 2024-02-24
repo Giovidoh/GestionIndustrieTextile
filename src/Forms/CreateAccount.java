@@ -31,6 +31,9 @@ import static Forms.Register.surname;
 
 import static Forms.AlertSuccess.AlertSuccessTitle;
 import static Forms.AlertSuccess.AlertSuccessMessage;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -123,7 +126,7 @@ public class CreateAccount extends javax.swing.JDialog {
 
         jLabel7.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel7.setText("Cet identifiant est déjà utiliisé par un autre utilisateur !");
+        jLabel7.setText("Cet identifiant est déjà utilisé par un autre utilisateur !");
 
         jLabel6.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 0, 0));
@@ -235,7 +238,7 @@ public class CreateAccount extends javax.swing.JDialog {
         if(jTextField1.getText().isBlank()){
             jLabel5.setVisible(true);
             jLabel6.setVisible(false);
-            jLabel6.setVisible(false);
+            jLabel7.setVisible(false);
         }else if(jTextField2.getText().isBlank()){
             jLabel5.setVisible(false);
             jLabel6.setVisible(true);
@@ -263,7 +266,8 @@ public class CreateAccount extends javax.swing.JDialog {
         DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
         
         String nomTable = "employe";
-        String whereStatement = "IdEmp=\"" + id + "\"";
+        String whereStatement = "IdEmp=\"" + id + "\""
+                                + " AND deleted_at IS NULL";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
         
         ResultSetTableModel result = new ResultSetTableModel(rs);
@@ -271,6 +275,8 @@ public class CreateAccount extends javax.swing.JDialog {
         if (result.getRowCount() > 0){
             found = true;
         }
+        
+        operationDb.closeconnexion();
         
         return found;
     }
@@ -290,43 +296,51 @@ public class CreateAccount extends javax.swing.JDialog {
                 // Afficher le message d'erreur "l'utilisateur existe déjà"
                 jLabel7.setVisible(true);
             } else {
-                // Renseigner les informations de la bdd
-                String url = ParametreDeConx.HOST_DB;
-                String username = ParametreDeConx.USERNAME_DB;
-                String password = ParametreDeConx.PASSWORD_DB;
-                DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-                
-                // Faire l'enregistrement du nouvel utilisateur
-                String nomTable = "employe";
-                String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "IdEmp", "MdpEmp", "created_at", "updated_at"};
-                
-                // Obtenez la date et l'heure actuelles avec un fuseau horaire spécifique (par exemple, UTC)
-                ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
-                
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                
-                String currentDateTimeFormattedString = currentDateTime.format(formatter);
-                
-                String[] contenuTableau = {surname, firstname, birthDate, gender, responsibility, contact, email, id, pwd, currentDateTimeFormattedString, currentDateTimeFormattedString};
-                
-                // Appliquer la requête d'insertion
-                String createAccount = operationDb.queryInsert(nomTable, nomColonne, contenuTableau);
-                
-                // Message de succès de l'enregistrement de l'utilisateur
-                AlertSuccessTitle = "Enregistré";
-                AlertSuccessMessage = "Utilisateur enregistré avec succès !";
-                
-                
-                // Raffraîchir la liste des employés
-                Home.reloadEmployeesTable = true;
-                
-                // Retourner à la liste des employés
-                super.dispose();
-                
-                // Afficher le message de succès
-                Home home = new Home();
-                AlertSuccess alert = new AlertSuccess(home, true);
-                alert.setVisible(true);
+                try {
+                    // Renseigner les informations de la bdd
+                    String url = ParametreDeConx.HOST_DB;
+                    String username = ParametreDeConx.USERNAME_DB;
+                    String password = ParametreDeConx.PASSWORD_DB;
+                    DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+                    
+                    // Faire l'enregistrement du nouvel utilisateur
+                    String nomTable = "employe";
+                    String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "IdEmp", "MdpEmp", "created_at", "updated_at"};
+                    
+                    // Obtenir la date et l'heure actuelles avec un fuseau horaire spécifique (par exemple, UTC)
+                    ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+                    
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    
+                    String currentDateTimeFormattedString = currentDateTime.format(formatter);
+                    
+                    String[] contenuTableau = {surname, firstname, birthDate, gender, responsibility, contact, email, id, pwd, currentDateTimeFormattedString, currentDateTimeFormattedString};
+                    
+                    // Appliquer la requête d'insertion
+                    String createAccount = operationDb.queryInsertPrecise(nomTable, nomColonne, contenuTableau);
+                    
+                    // Message de succès de l'enregistrement de l'utilisateur
+                    AlertSuccessTitle = "Enregistré";
+                    AlertSuccessMessage = "Utilisateur enregistré avec succès !";
+                    
+                    // Raffraîchir la liste des employés
+                    Home.reloadEmployeesTable = true;
+                    
+                    // Raffraîchir les contenus des comboboxes des responsables
+                    Home.reloadResponsiblesCombos = true;
+                    
+                    // Retourner à la liste des employés
+                    super.dispose();
+                    
+                    // Afficher le message de succès
+                    Home home = new Home();
+                    AlertSuccess alert = new AlertSuccess(home, true);
+                    alert.setVisible(true);
+                    
+                    operationDb.closeconnexion();
+                } catch (SQLException ex) {
+                    Logger.getLogger(CreateAccount.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             
         }
@@ -334,13 +348,17 @@ public class CreateAccount extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // Fermer ce formulaire
-        super.dispose();
-        
-        // Afficher le formulaire d'enregistrement d'employé
-        Home home = new Home();
-        Register register = new Register(home, true);
-        register.setVisible(true);
+        try {
+            // Fermer ce formulaire
+            super.dispose();
+            
+            // Afficher le formulaire d'enregistrement d'employé
+            Home home = new Home();
+            Register register = new Register(home, true);
+            register.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(CreateAccount.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

@@ -30,6 +30,12 @@ import javax.swing.table.DefaultTableModel;
 
 import static Forms.AlertWarning.AlertWarningTitle;
 import static Forms.AlertWarning.AlertWarningMessage;
+import static Forms.AlertSuccess.AlertSuccessTitle;
+import static Forms.AlertSuccess.AlertSuccessMessage;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  *
@@ -40,39 +46,48 @@ public class Home extends javax.swing.JFrame {
     /**
      * Creates new form Home
      */
-    public Home() {
+    public Home() throws SQLException {
         initComponents();
         setLocationRelativeTo(null);
-        
+
         // Cacher les messages d'erreur
         hideErrorMessages();
-        
+
+        // Remplir la liste des projets
+        fillProjectsTable(jTable1);
+
         // Remplir la liste des employés
-        fillTable(jTable2);
-        
+        fillEmployeesTable(jTable2);
+
+        // Remplir les comboboxes des responsables
+        fillRespoCombos();
+
         tableStyle();
     }
-    
+
     // PROPERTIES
-    
     // Variable de rafraîchissement de la liste des employés
     public static Boolean reloadEmployeesTable = false;
-    
+
+    // Variable de rafraîchissement de la liste des projets
+    public static Boolean reloadProjectsTable = false;
+
+    // Variable de rafraîchissement des comboboxes des responsables
+    public static Boolean reloadResponsiblesCombos = false;
+
     // Les titres du formulaire de Projets
     public static String projetTitre = "";
     protected String voirProjet = "Voir un projet";
     protected String ajouterProjet = "Ajouter un projet";
     protected String modifierProjet = "Modifier un projet";
-    
+
     // Les titres du formulaire d'enregistrement des employés
     public static String registerTitre = "";
     protected String voirRegister = "Voir un employé";
     protected String ajouterRegister = "Enregistrer un employé";
     protected String modifierRegister = "Modifier un employé";
-    
-    // END OF PROPERTIES
-    
 
+    // END OF PROPERTIES
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -491,20 +506,17 @@ public class Home extends javax.swing.JFrame {
         jTable1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "N°", "Nom", "Description", "Statut"
+                "N°", "Nom", "Description", "Statut", "Créateur"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -803,6 +815,11 @@ public class Home extends javax.swing.JFrame {
         jButton13.setBorder(null);
         jButton13.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton13.setFocusPainted(false);
+        jButton13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton13ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
@@ -877,50 +894,298 @@ public class Home extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // MY FUNCTIONS
-    
-    private void tableStyle(){
-        jTable1.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 16));
+    private void tableStyle() {
+        jTable1.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 16));
         jTable1.getTableHeader().setBackground(new Color(77, 157, 221));
-        jTable1.setFont( new Font("Segoe UI", Font.PLAIN, 16));
-        
-        jTable2.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 16));
+        jTable1.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+
+        jTable2.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 16));
         jTable2.getTableHeader().setBackground(new Color(77, 157, 221));
-        jTable1.setFont( new Font("Segoe UI", Font.PLAIN, 16));
+        jTable1.setFont(new Font("Segoe UI", Font.PLAIN, 16));
     }
-    
+
     private void hideErrorMessages() {
         // Rendre invisible les messages d'erreur
         jLabel16.setVisible(false);
         jLabel17.setVisible(false);
         jLabel18.setVisible(false);
     }
-    
-    public void fillTable(JTable table){
+
+    private void fillRespoCombos() throws SQLException {
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
         String password = ParametreDeConx.PASSWORD_DB;
         DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        //// Récupérer les designers
+        String nomTable = "employe";
+        String whereStatement = "RespoEmp = \"Designer de mode\""
+                + " AND deleted_at IS NULL"
+                + " ORDER BY NomEmp, PrenomEmp ASC";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        // Créer un modèle de données pour le JComboBox
+        DefaultComboBoxModel<String> model1 = new DefaultComboBoxModel<>();
+
+        // Première ligne vide
+        model1.addElement("");
+
+        // Parcourir les résultats de la requête et les ajouter au modèle de données du JComboBox
+        while (rs.next()) {
+            String nom = rs.getString("NomEmp") + " " + rs.getString("PrenomEmp");
+            model1.addElement(nom);
+        }
+
+        // Affecter le modèle de données au JComboBox
+        jComboBox1.setModel(model1);
+
+        // Sélectionner le designer qui est responsable actuellement
+        whereStatement = "RespoEmp = \"Designer de mode\""
+                + " AND responsable = \"1\""
+                + " AND deleted_at IS NULL";
+        rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        if (rs != null && rs.next()) {
+            String nom = rs.getString("NomEmp") + " " + rs.getString("PrenomEmp");
+            jComboBox1.setSelectedItem(nom);
+        }
+        //// Fin Récupérer les designers
+
+        //// Récupérer les stylistes
+        nomTable = "employe";
+        whereStatement = "RespoEmp = \"Styliste\""
+                + " AND deleted_at IS NULL"
+                + " ORDER BY NomEmp, PrenomEmp ASC";
+        rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        // Créer un modèle de données pour le JComboBox
+        DefaultComboBoxModel<String> model2 = new DefaultComboBoxModel<>();
+
+        // Première ligne vide
+        model2.addElement("");
+
+        // Parcourir les résultats de la requête et les ajouter au modèle de données du JComboBox
+        while (rs.next()) {
+            String nom = rs.getString("NomEmp") + " " + rs.getString("PrenomEmp");
+            model2.addElement(nom);
+        }
+
+        // Affecter le modèle de données au JComboBox
+        jComboBox2.setModel(model2);
+
+        // Sélectionner le designer qui est responsable actuellement
+        whereStatement = "RespoEmp = \"Styliste\""
+                + " AND responsable = 1"
+                + " AND deleted_at IS NULL";
+        rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        if (rs != null && rs.next()) {
+            String nom = rs.getString("NomEmp") + " " + rs.getString("PrenomEmp");
+            jComboBox2.setSelectedItem(nom);
+        }
+        //// Fin Récupérer les stylistes
+
+        //// Récupérer les fabricants
+        nomTable = "employe";
+        whereStatement = "RespoEmp = \"Fabricant\""
+                + " AND deleted_at IS NULL"
+                + " ORDER BY NomEmp, PrenomEmp ASC";
+        rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        // Créer un modèle de données pour le JComboBox
+        DefaultComboBoxModel<String> model3 = new DefaultComboBoxModel<>();
+
+        // Première ligne vide
+        model3.addElement("");
+
+        // Parcourir les résultats de la requête et les ajouter au modèle de données du JComboBox
+        while (rs.next()) {
+            String nom = rs.getString("NomEmp") + " " + rs.getString("PrenomEmp");
+            model3.addElement(nom);
+        }
+
+        // Affecter le modèle de données au JComboBox
+        jComboBox3.setModel(model3);
+
+        // Sélectionner le designer qui est responsable actuellement
+        whereStatement = "RespoEmp = \"Fabricant\""
+                + " AND responsable = 1"
+                + " AND deleted_at IS NULL";
+        rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        if (rs != null && rs.next()) {
+            String nom = rs.getString("NomEmp") + " " + rs.getString("PrenomEmp");
+            jComboBox3.setSelectedItem(nom);
+        }
+        //// Fin Récupérer les fabricants
         
+        operationDb.closeconnexion();
+    }
+
+    private void saveResponsibles() throws SQLException {
+        if (jComboBox1.getSelectedIndex() == 0) {
+            jLabel16.setVisible(true);
+            jLabel17.setVisible(false);
+            jLabel18.setVisible(false);
+        } else if (jComboBox2.getSelectedIndex() == 0) {
+            jLabel16.setVisible(false);
+            jLabel17.setVisible(true);
+            jLabel18.setVisible(false);
+        } else if (jComboBox3.getSelectedIndex() == 0) {
+            jLabel16.setVisible(false);
+            jLabel17.setVisible(false);
+            jLabel18.setVisible(true);
+        } else {
+            // Cacher les messages d'erreur
+            hideErrorMessages();
+
+            // Renseigner les informations de la bdd
+            String url = ParametreDeConx.HOST_DB;
+            String username = ParametreDeConx.USERNAME_DB;
+            String password = ParametreDeConx.PASSWORD_DB;
+            DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+            //// Enregistrer les responsables des différents groupes
+            // Retirer les titres de responsables
+            String nomTable = "employe";
+            String[] nomColonne = {"Responsable"};
+            String[] contenuTableau0 = {"0"};
+            String whereStatement = "1=1";
+            String rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau0, whereStatement);
+            // Fin Retirer les titres de responsables
+
+            // Responsable designer
+            String nomComplet = (String) jComboBox1.getSelectedItem();
+            String nom = nomComplet.split(" ")[0];
+            String prenom = nomComplet.split(" ")[1];
+            String[] contenuTableau1 = {"1"};
+            String whereStatement1 = "NomEmp = \"" + nom
+                    + "\" AND PrenomEmp = \"" + prenom
+                    + "\" AND RespoEmp = \"Designer de mode\""
+                    + " AND deleted_at IS NULL";
+            rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau1, whereStatement1);
+            // Fin Responsable designer
+
+            // Responsable styliste
+            nomComplet = (String) jComboBox2.getSelectedItem();
+            nom = nomComplet.split(" ")[0];
+            prenom = nomComplet.split(" ")[1];
+            nomTable = "employe";
+            String whereStatement2 = "NomEmp = \"" + nom
+                    + "\" AND PrenomEmp = \"" + prenom
+                    + "\" AND RespoEmp = \"Styliste\""
+                    + " AND deleted_at IS NULL";
+            rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau1, whereStatement2);
+            // Fin Responsable styliste
+
+            // Responsable fabricant
+            nomComplet = (String) jComboBox3.getSelectedItem();
+            nom = nomComplet.split(" ")[0];
+            prenom = nomComplet.split(" ")[1];
+            nomTable = "employe";
+            String whereStatement3 = "NomEmp = \"" + nom
+                    + "\" AND PrenomEmp = \"" + prenom
+                    + "\" AND RespoEmp = \"Fabricant\""
+                    + " AND deleted_at IS NULL";
+            rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau1, whereStatement3);
+            // Fin Responsable fabricant
+            //// Fin Enregistrer les responsables des différents groupes
+
+            operationDb.closeconnexion();
+        }
+    }
+
+    public void fillProjectsTable(JTable table) {
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        // Récupérer les informations à afficher
+        String nomTable = "projet";
+        String whereStatement = "deleted_at IS NULL";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+
+        // Modèle qui sera affiché dans la table
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+
+        // Vider le modèle
+        tableModel.setRowCount(0);
+
+        // Vérifier s'il y a des utilisateurs enregistrés et les afficher dans la table
+        if (result.getRowCount() > 0) {
+            for (int i = 0; i < result.getRowCount(); i++) {
+
+                try {
+                    Object[] ligne = new Object[5];
+
+                    Object idProj = result.getValueAt(i, 0).toString();
+                    Object nomProj = result.getValueAt(i, 1).toString();
+                    Object descriptionProj = result.getValueAt(i, 2).toString();
+                    Object statutProj = result.getValueAt(i, 3).toString();
+                    Object createurProj = null;
+
+                    // Rechercher le nom complet du créateur du projet
+                    Object idCreateurProj = result.getValueAt(i, 4).toString();
+                    String nomTable2 = "projet, employe";
+                    String whereStatement2 = "employe.Id = projet.IdCreateur"
+                            + " AND projet.deleted_at IS NULL";
+                    ResultSet rs2 = operationDb.querySelectAllWhere(nomTable2, whereStatement2);
+
+                    if (rs2.next()) {
+                        createurProj = rs2.getString("NomEmp") + " " + rs2.getString("PrenomEmp");
+
+                        ligne[0] = idProj;
+                        ligne[1] = nomProj;
+                        ligne[2] = descriptionProj;
+                        ligne[3] = statutProj;
+                        ligne[4] = createurProj;
+
+                        tableModel.addRow(ligne);
+                    }
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            table.setModel(tableModel);
+
+        }
+        
+        operationDb.closeconnexion();
+    }
+
+    public void fillEmployeesTable(JTable table) {
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
         // Récupérer les informations à afficher
         String nomTable = "employe";
         String whereStatement = "deleted_at IS NULL";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
-        
+
         ResultSetTableModel result = new ResultSetTableModel(rs);
-        
+
         // Modèle qui sera affiché dans la table
         DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
-        
+
         // Vider le modèle
         tableModel.setRowCount(0);
-        
+
         // Vérifier s'il y a des utilisateurs enregistrés et les afficher dans la table
-        if(result.getRowCount() > 0){
-            for(int i=0; i < result.getRowCount(); i++){
-                
+        if (result.getRowCount() > 0) {
+            for (int i = 0; i < result.getRowCount(); i++) {
+
                 Object[] ligne = new Object[5];
-                
+
                 Object idEmp = result.getValueAt(i, 0).toString();
                 Object surnameEmp = result.getValueAt(i, 1).toString();
                 Object firstnameEmp = result.getValueAt(i, 2).toString();
@@ -930,13 +1195,13 @@ public class Home extends javax.swing.JFrame {
                 Object contactEmp = result.getValueAt(i, 6).toString();
                 Object emailEmp = result.getValueAt(i, 7).toString();
                 Object identifiantEmp = result.getValueAt(i, 8).toString();
-                
+
                 Object address = result.getValueAt(i, 3).toString();
-                
+
                 ligne[0] = idEmp;
                 ligne[1] = surnameEmp + " " + firstnameEmp;
                 ligne[2] = genderEmp;
-                
+
                 // Calculer l'âge de l'employé
                 String year = birthDateEmp.substring(0, 4);
                 String month = birthDateEmp.substring(5, 7);
@@ -946,37 +1211,38 @@ public class Home extends javax.swing.JFrame {
                 int dayInt = Integer.parseInt(day);
                 LocalDate date = LocalDate.of(yearInt, monthInt, dayInt);
                 LocalDate currentDateTime = ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
-                
+
                 Period period = Period.between(date, currentDateTime);
-                
+
                 int age = period.getYears();
-                
+
                 ligne[3] = age;
-                
+
                 ligne[4] = responsibilityEmp;
-                
+
                 // table.setValueAt(idEmp, i, 0);
                 // table.setValueAt(familyName, i, 1);
                 // table.setValueAt(firstName, i, 2);
                 // table.setValueAt(address, i, 3);
-                
                 tableModel.addRow(ligne);
             }
-            
+
             table.setModel(tableModel);
-            
+
         }
+        
+        operationDb.closeconnexion();
     }
-    
+
     // END OF MY FUNCTIONS
-    
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Changer la couleur
         jButton1.setContentAreaFilled(true);
         jButton2.setContentAreaFilled(false);
         jButton3.setContentAreaFilled(false);
         jButton12.setContentAreaFilled(false);
-        
+
         // Choisir le panel approprié
         jTabbedPane1.setSelectedIndex(0);
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -987,7 +1253,7 @@ public class Home extends javax.swing.JFrame {
         jButton2.setContentAreaFilled(true);
         jButton3.setContentAreaFilled(false);
         jButton12.setContentAreaFilled(false);
-        
+
         // Choisir le panel approprié
         jTabbedPane1.setSelectedIndex(1);
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -998,7 +1264,7 @@ public class Home extends javax.swing.JFrame {
         jButton2.setContentAreaFilled(false);
         jButton3.setContentAreaFilled(true);
         jButton12.setContentAreaFilled(false);
-        
+
         // Choisir le panel approprié
         jTabbedPane1.setSelectedIndex(2);
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -1068,13 +1334,13 @@ public class Home extends javax.swing.JFrame {
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // Vérifier si une ligne de la table est sélectionnée
         int selectedRow = jTable2.getSelectedRow();
-        if(selectedRow != -1){
-           // Changer la variable titre du formulaire des Employés
-           registerTitre = modifierRegister;
+        if (selectedRow != -1) {
+            // Changer la variable titre du formulaire des Employés
+            registerTitre = modifierRegister;
 
-           // Ouvrir le formulaire pour voir l'employé sélectionné
-           Register register = new Register(this, true);
-           register.setVisible(true);
+            // Ouvrir le formulaire pour voir l'employé sélectionné
+            Register register = new Register(this, true);
+            register.setVisible(true);
         } else {
             // Envoyer un message d'alerte
             AlertWarningTitle = "Attention";
@@ -1082,7 +1348,7 @@ public class Home extends javax.swing.JFrame {
             AlertWarning alert = new AlertWarning(this, true);
             alert.setVisible(true);
         }
-        
+
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
@@ -1091,16 +1357,32 @@ public class Home extends javax.swing.JFrame {
         jButton2.setContentAreaFilled(false);
         jButton3.setContentAreaFilled(false);
         jButton12.setContentAreaFilled(true);
-        
+
         // Choisir le panel approprié
         jTabbedPane1.setSelectedIndex(3);
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // Raffraîchir la liste des projets si le raffraîchissement est vrai
+        if (reloadProjectsTable) {
+            fillProjectsTable(jTable1);
+            reloadProjectsTable = false;
+        }
+
         // Raffraîchir la liste des employés si le raffraîchissement est vrai
         if (reloadEmployeesTable) {
-            fillTable(jTable2);
+            fillEmployeesTable(jTable2);
             reloadEmployeesTable = false;
+        }
+
+        // Raffraîchir les comboboxes des responsables
+        if (reloadResponsiblesCombos) {
+            try {
+                fillRespoCombos();
+                reloadResponsiblesCombos = false;
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_formWindowActivated
 
@@ -1109,21 +1391,21 @@ public class Home extends javax.swing.JFrame {
         // Récupérer l'ID de l'utilisateur
         int ligne = jTable2.getSelectedRow();
         String idEmp = jTable2.getValueAt(ligne, 0).toString();
-        
+
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
         String password = ParametreDeConx.PASSWORD_DB;
         DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-        
+
         // Récupérer les informations à afficher
         String nomTable = "employe";
         String whereStatement = "Id = \"" + idEmp + "\"";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
-        
+
         ResultSetTableModel result = new ResultSetTableModel(rs);
-        
-        if(result.getRowCount() > 0){
+
+        if (result.getRowCount() > 0) {
             String surnameEmp = result.getValueAt(0, 1).toString();
             String firstnameEmp = result.getValueAt(0, 2).toString();
             String birthDateEmp = result.getValueAt(0, 3).toString();
@@ -1131,7 +1413,7 @@ public class Home extends javax.swing.JFrame {
             String responsibilityEmp = result.getValueAt(0, 5).toString();
             String contactEmp = result.getValueAt(0, 6).toString();
             String emailEmp = result.getValueAt(0, 7).toString();
-            
+
             // Affecter les informations de l'utilisateur dans les variables statiques
             id = idEmp;
             firstname = firstnameEmp;
@@ -1142,6 +1424,8 @@ public class Home extends javax.swing.JFrame {
             contact = contactEmp;
             email = emailEmp;
         }
+        
+        operationDb.closeconnexion();
     }//GEN-LAST:event_jTable2MousePressed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
@@ -1156,6 +1440,21 @@ public class Home extends javax.swing.JFrame {
         Login login = new Login();
         login.setVisible(true);
     }//GEN-LAST:event_jButton14ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        try {
+            // Enregistrer les responsables
+            saveResponsibles();
+
+            // Message de succès de l'enregistrement
+            AlertSuccessTitle = "Enregistrement effectué";
+            AlertSuccessMessage = "Responsables enregistrés avec succès !";
+            AlertSuccess alert = new AlertSuccess(this, true);
+            alert.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton13ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1187,7 +1486,11 @@ public class Home extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Home().setVisible(true);
+                try {
+                    new Home().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

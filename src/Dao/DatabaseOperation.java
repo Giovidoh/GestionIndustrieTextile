@@ -143,7 +143,7 @@ public class DatabaseOperation {
     }
     // Fungsi eksekusi query insert
 
-    public String queryInsert(String nomTable, String[] nomColonne, String[] contenuTableau) {
+    public String queryInsertPrecise(String nomTable, String[] nomColonne, String[] contenuTableau) {
 
         connexionDatabase();
         int i;
