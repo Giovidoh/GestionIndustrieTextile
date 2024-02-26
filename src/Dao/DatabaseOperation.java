@@ -131,7 +131,7 @@ public class DatabaseOperation {
         SQL = "INSERT INTO " + nomTable + " VALUES(";
 
         for (i = 0; i <= contenuTableau.length - 1; i++) {
-            SQL += "'" + contenuTableau[i] + "'";
+            SQL += "\"" + contenuTableau[i] + "\"";
             if (i < contenuTableau.length - 1) {
                 SQL += ",";
             }
@@ -156,7 +156,7 @@ public class DatabaseOperation {
         }
         SQL += ") VALUES(";
         for (i = 0; i <= contenuTableau.length - 1; i++) {
-            SQL += "'" + contenuTableau[i] + "'";
+            SQL += "\"" + contenuTableau[i] + "\"";
             if (i < contenuTableau.length - 1) {
                 SQL += ",";
             }

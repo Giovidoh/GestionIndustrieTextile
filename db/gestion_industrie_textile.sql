@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : sam. 24 fév. 2024 à 15:24
+-- Généré le : lun. 26 fév. 2024 à 01:22
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -81,11 +81,25 @@ INSERT INTO `employe` (`Id`, `NomEmp`, `PrenomEmp`, `DateNaisEmp`, `GenreEmp`, `
 
 CREATE TABLE `image` (
   `Id` int(11) NOT NULL,
-  `CheminImage` blob NOT NULL,
-  `IdDesign` int(11) DEFAULT NULL,
-  `IdStyle` int(11) DEFAULT NULL,
-  `IdProduit` int(11) DEFAULT NULL
+  `Contenu` varchar(255) NOT NULL,
+  `IdEmploye` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `image`
+--
+
+INSERT INTO `image` (`Id`, `Contenu`, `IdEmploye`) VALUES
+(1, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d\'écran 2023-07-18 001452_20240226002006.png', 1),
+(2, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d\'écran 2023-08-08 190021_20240226002006.png', 1),
+(3, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d\'écran 2023-08-08 190106_20240226002006.png', 1),
+(4, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d\'écran 2023-08-22 170606_20240226002006.png', 1),
+(5, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d’écran (2)_20240226002006.png', 1),
+(6, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d\'écran 2023-07-18 001452_20240226002056.png', 1),
+(7, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d\'écran 2023-08-08 190021_20240226002056.png', 1),
+(8, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d\'écran 2023-08-08 190106_20240226002057.png', 1),
+(9, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d\'écran 2023-08-22 170606_20240226002057.png', 1),
+(10, 'D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages/Capture d’écran (2)_20240226002057.png', 1);
 
 -- --------------------------------------------------------
 
@@ -135,7 +149,20 @@ INSERT INTO `projet` (`Id`, `NomProjet`, `DescriptionProjet`, `StatutProjet`, `I
 (16, 'fjdkfldkzlekfjdlkfjdlfldkfjfld', 'fldkqjfjqdklsf', 'Pas encore commencé', 1, '2024-02-23 17:08:49', '2024-02-23 17:08:49', NULL),
 (17, 'fjfkdlfmekfjdpriape:akfocirnej', 'fdkjqskljf', 'Pas encore commencé', 1, '2024-02-23 17:09:32', '2024-02-23 17:09:32', NULL),
 (18, 'f', 'f', 'Pas encore commencé', 1, '2024-02-23 17:12:20', '2024-02-23 17:12:20', NULL),
-(19, 'ff', 'fsdff', 'Pas encore commencé', 1, '2024-02-23 17:12:32', '2024-02-23 17:12:32', NULL);
+(19, 'ff', 'fsdff', 'Pas encore commencé', 1, '2024-02-23 17:12:32', '2024-02-23 17:12:32', NULL),
+(20, 'Mon projet', 'Ceci est la description de mon projet', 'En cours', 1, '2024-02-25 22:03:53', '2024-02-25 22:03:53', NULL),
+(21, 'Meilleur projet', 'Le meilleur projet de tous les temps', 'Pas encore commencé', 1, '2024-02-25 23:35:03', '2024-02-25 23:35:03', NULL),
+(22, 'Un projet', 'Description du projet', 'Pas encore commencé', 1, '2024-02-25 23:54:46', '2024-02-25 23:54:46', NULL),
+(23, 'Un autre projet', 'Description d\'un autre projet', 'Terminé', 1, '2024-02-25 23:58:19', '2024-02-25 23:58:19', NULL),
+(24, 'project', 'project', 'Pas encore commencé', 1, '2024-02-26 00:02:01', '2024-02-26 00:02:01', NULL),
+(25, 'project1', 'pro', 'Pas encore commencé', 1, '2024-02-26 00:03:38', '2024-02-26 00:03:38', NULL),
+(26, 'ok1', 'ok', 'Pas encore commencé', 1, '2024-02-26 00:04:57', '2024-02-26 00:04:57', NULL),
+(27, 'u', 'u', 'Brouillon', 1, '2024-02-26 00:09:04', '2024-02-26 00:09:04', NULL),
+(28, 'o', 'o', 'Brouillon', 1, '2024-02-26 00:11:52', '2024-02-26 00:11:52', NULL),
+(29, 'p', 'p', 'Brouillon', 1, '2024-02-26 00:12:58', '2024-02-26 00:12:58', NULL),
+(30, 'a', 'a', 'Brouillon', 1, '2024-02-26 00:17:41', '2024-02-26 00:17:41', NULL),
+(31, 'ba', 'b', 'Brouillon', 1, '2024-02-26 00:20:06', '2024-02-26 00:20:06', NULL),
+(32, 'ab', 'ab', 'Brouillon', 1, '2024-02-26 00:20:56', '2024-02-26 00:20:56', NULL);
 
 -- --------------------------------------------------------
 
@@ -175,9 +202,7 @@ ALTER TABLE `employe`
 --
 ALTER TABLE `image`
   ADD PRIMARY KEY (`Id`),
-  ADD KEY `IdDesign` (`IdDesign`),
-  ADD KEY `IdStyle` (`IdStyle`),
-  ADD KEY `IdProduit` (`IdProduit`);
+  ADD KEY `IdEmploye` (`IdEmploye`);
 
 --
 -- Index pour la table `produit`
@@ -222,7 +247,7 @@ ALTER TABLE `employe`
 -- AUTO_INCREMENT pour la table `image`
 --
 ALTER TABLE `image`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `produit`
@@ -234,7 +259,7 @@ ALTER TABLE `produit`
 -- AUTO_INCREMENT pour la table `projet`
 --
 ALTER TABLE `projet`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT pour la table `style`
@@ -257,9 +282,7 @@ ALTER TABLE `design`
 -- Contraintes pour la table `image`
 --
 ALTER TABLE `image`
-  ADD CONSTRAINT `image_ibfk_1` FOREIGN KEY (`IdDesign`) REFERENCES `design` (`Id`),
-  ADD CONSTRAINT `image_ibfk_2` FOREIGN KEY (`IdStyle`) REFERENCES `style` (`Id`),
-  ADD CONSTRAINT `image_ibfk_3` FOREIGN KEY (`IdProduit`) REFERENCES `produit` (`Id`);
+  ADD CONSTRAINT `image_ibfk_1` FOREIGN KEY (`IdEmploye`) REFERENCES `employe` (`Id`);
 
 --
 -- Contraintes pour la table `produit`

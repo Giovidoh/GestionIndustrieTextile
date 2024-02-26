@@ -13,16 +13,25 @@ import static Forms.CreateAccount.id;
 import static Forms.CreateAccount.pwd;
 
 import static Forms.Home.reloadProjectsTable;
+import static Forms.Login.UserId;
 
 import java.sql.ResultSet;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,26 +50,10 @@ public class ViewProject extends javax.swing.JDialog {
         setLocationRelativeTo(null);
 
         hideErrorMessages();
+        changeFormTitle();
+        changeFormStateByTitle();
 
-        // Changer le titre du formulaire
-        jLabel1.setText(Home.projetTitre);
-
-        // Changer l'état du formulaire en fonction du titre affiché
-        if (jLabel1.getText().equals(voirTitre)) {
-            // Désactiver les champs afin de ne pouvoir voir que leurs contenus
-            jTextField1.setEnabled(false);
-            jTextArea1.setEnabled(false);
-            jComboBox1.setEnabled(false);
-
-            // Cacher le bouton d'enregistrement
-            jButton1.setVisible(false);
-        } else if (jLabel1.getText().equals(ajouterTitre)) {
-            // Modifier le texte du bouton d'enregistrement à "Ajouter"
-            jButton1.setText("Ajouter");
-        } else if (jLabel1.getText().equals(modifierTitre)) {
-            // Modifier le texte du bouton d'enregistrement à "Modifier"
-            jButton1.setText("Modifier");
-        }
+        
     }
 
     // PROPERTIES
@@ -69,10 +62,11 @@ public class ViewProject extends javax.swing.JDialog {
     protected String ajouterTitre = "Ajouter un projet";
     protected String modifierTitre = "Modifier un projet";
 
-    // Variables statiques nom et description du projet
+    // Variables statiques des informations du projet
     private static String nom;
     private static String description;
     private static String statut;
+    private static File[] images;
 
     // END OF PROPERTIES
     /**
@@ -289,6 +283,30 @@ public class ViewProject extends javax.swing.JDialog {
         jLabel5.setVisible(false);
         jLabel8.setVisible(false);
     }
+    
+    private void changeFormTitle(){
+        // Changer le titre du formulaire
+        jLabel1.setText(Home.projetTitre);
+    }
+    
+    private void changeFormStateByTitle(){
+        // Changer l'état du formulaire en fonction du titre affiché
+        if (jLabel1.getText().equals(voirTitre)) {
+            // Désactiver les champs afin de ne pouvoir voir que leurs contenus
+            jTextField1.setEnabled(false);
+            jTextArea1.setEnabled(false);
+            jComboBox1.setEnabled(false);
+
+            // Cacher le bouton d'enregistrement
+            jButton1.setVisible(false);
+        } else if (jLabel1.getText().equals(ajouterTitre)) {
+            // Modifier le texte du bouton d'enregistrement à "Ajouter"
+            jButton1.setText("Ajouter");
+        } else if (jLabel1.getText().equals(modifierTitre)) {
+            // Modifier le texte du bouton d'enregistrement à "Modifier"
+            jButton1.setText("Modifier");
+        }
+    }
 
     private Boolean retrieveFormData() {
         // Vérifier si les champs sont remplis
@@ -326,7 +344,7 @@ public class ViewProject extends javax.swing.JDialog {
         // Vérifier si un projet avec le même nom existe déjà
         String nomTable = "projet";
         String whereStatement = "NomProjet = \"" + nom
-                + "\" AND deleted_at IS NULL";
+                                + "\" AND deleted_at IS NULL";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
 
         ResultSetTableModel result = new ResultSetTableModel(rs);
@@ -338,8 +356,58 @@ public class ViewProject extends javax.swing.JDialog {
 
         return found;
     }
+    
+    private static String saveImageToDirectory(File imageFile, File destinationDir) throws IOException {
+        // Vérifie si le dossier de destination existe, sinon le crée
+        if (!destinationDir.exists()) {
+            destinationDir.mkdirs();
+        }
+        
+        // Obtenir le nom du fichier actuel
+        String originalFileName = imageFile.getName();
+        
+        // Obtenir le timestamp actuel
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String timestamp = dateFormat.format(new Date());
+        
+        // Créer le nouveau nom de fichier avec le nom du fichier actuel et le timestamp
+        String[] fileNameParts = originalFileName.split("\\."); // Split le nom de fichier par le point pour obtenir l'extension
+        String fileExtension = fileNameParts.length > 1 ? "." + fileNameParts[fileNameParts.length - 1] : "";
+        String newFileName = fileNameParts[0] + "_" + timestamp + fileExtension;
+        
+        // Copie le fichier image vers le dossier de destination
+        Path sourcePath = imageFile.toPath();
+        Path destinationPath = Paths.get(destinationDir.getAbsolutePath(), newFileName);
+        Files.copy(sourcePath, destinationPath);
+
+        System.out.println("Image enregistrée dans : " + destinationPath);
+        
+        return destinationPath.toString();
+    }
+    
+    private static void saveImagePathToDatabase(String savedImagePath) throws SQLException {
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+        
+        try {
+            String nomTable = "image";
+            String[] nomColonne = {"Contenu", "IdEmploye"};
+            
+            String[] contenuTableau = {savedImagePath.replace("\\", "/"), UserId};
+            
+            operationDb.queryInsertPrecise(nomTable, nomColonne, contenuTableau);
+            
+            System.out.println("Chemin de l'image enregistré dans la base de données.");
+        } catch(Exception ex) {
+            System.out.println("Erreur lors de l'enregistrement de l'image dans la bdd : " + ex);
+        }
+    }
 
     // END OF FUNCTIONS
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true); // Autorise la sélection multiple
@@ -353,11 +421,9 @@ public class ViewProject extends javax.swing.JDialog {
         if (result == JFileChooser.APPROVE_OPTION) {
             File[] selectedFiles = fileChooser.getSelectedFiles();
 
-            // Ici, vous pouvez traiter les fichiers sélectionnés
-            for (File file : selectedFiles) {
-                // Insérez votre logique pour ajouter les fichiers à la base de données
-                System.out.println("Fichier sélectionné : " + file.getAbsolutePath());
-            }
+            // Renvoyer les images sélectionnées dans la variable statique appropriée
+            images = selectedFiles;
+            
         }
 
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -383,7 +449,7 @@ public class ViewProject extends javax.swing.JDialog {
                     DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
                     
                     try {
-                        // Faire l'enregistrement du nouveau projet
+                        //// Enregistrement du nouveau projet
                         String nomTable = "projet";
                         String[] nomColonne = {"NomProjet", "DescriptionProjet", "StatutProjet", "IdCreateur", "created_at", "updated_at"};
 
@@ -400,6 +466,32 @@ public class ViewProject extends javax.swing.JDialog {
 
                         // Appliquer la requête d'insertion
                         String createProject = operationDb.queryInsertPrecise(nomTable, nomColonne, contenuTableau);
+                        //// Fin Enregistrement du nouveau projet
+                        
+                        //// Enregistrement des images liées au projet
+                        if(images.length > 0){
+                            for (File image : images){
+                                // Enregistrer les images dans le dossier "projectimages"
+                                // Et enregistrer les chemins des images dans la bdd
+                                String destinationFolder = "D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages";
+
+                                File destinationDir = new File(destinationFolder);
+
+                                try {
+                                    String savedImagePath;
+                                    // Sauvegarder l'image dans le dossier
+                                    savedImagePath = saveImageToDirectory(image, destinationDir);
+                                    // Sauvegarder le chemin de l'image dans la bdd
+                                    saveImagePathToDatabase(savedImagePath);
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                } catch (IOException ex) {
+                                    Logger.getLogger(ViewProject.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                
+                            }
+                        }
+                        //// Fin Enregistrement des images liées au projet
 
                         // Vider les champs et ramener le curseur au premier champ
                         jTextField1.setText("");
