@@ -44,7 +44,7 @@ public class ViewProject extends javax.swing.JDialog {
     /**
      * Creates new form ViewProject
      */
-    public ViewProject(java.awt.Frame parent, boolean modal) {
+    public ViewProject(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
@@ -52,7 +52,7 @@ public class ViewProject extends javax.swing.JDialog {
         hideErrorMessages();
         changeFormTitle();
         changeFormStateByTitle();
-
+        fillFieldsIfExist();
         
     }
 
@@ -63,10 +63,11 @@ public class ViewProject extends javax.swing.JDialog {
     protected String modifierTitre = "Modifier un projet";
 
     // Variables statiques des informations du projet
-    private static String nom;
-    private static String description;
-    private static String statut;
-    private static File[] images;
+    public static String selectedProjectId;
+    public static String nom;
+    public static String description;
+    public static String statut;
+    public static File[] images;
 
     // END OF PROPERTIES
     /**
@@ -97,6 +98,7 @@ public class ViewProject extends javax.swing.JDialog {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
 
+        setTitle("Projet");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(77, 157, 221));
@@ -293,9 +295,9 @@ public class ViewProject extends javax.swing.JDialog {
         // Changer l'état du formulaire en fonction du titre affiché
         if (jLabel1.getText().equals(voirTitre)) {
             // Désactiver les champs afin de ne pouvoir voir que leurs contenus
-            jTextField1.setEnabled(false);
-            jTextArea1.setEnabled(false);
-            jComboBox1.setEnabled(false);
+            jTextField1.setEditable(false);
+            jTextArea1.setEditable(false);
+            jComboBox1.setEditable(false);
             
             // Changer le bouton d'importation d'image en bouton d'affichage
             jButton3.setText("Afficher les images");
@@ -308,6 +310,15 @@ public class ViewProject extends javax.swing.JDialog {
         } else if (jLabel1.getText().equals(modifierTitre)) {
             // Modifier le texte du bouton d'enregistrement à "Modifier"
             jButton1.setText("Modifier");
+        }
+    }
+    
+    private void fillFieldsIfExist() throws SQLException {
+        // Réaffecter les données précédentes dans les champs s'il y en a.
+        if (!selectedProjectId.isBlank()) {
+            jTextField1.setText(nom);
+            jTextArea1.setText(description);
+            jComboBox1.setSelectedItem(statut);
         }
     }
 
@@ -431,8 +442,14 @@ public class ViewProject extends javax.swing.JDialog {
 
             }
         }else if (jButton3.getText().equals("Afficher les images")){
-            // Si le bouton est "Afficher les images"
-            
+            try {
+                // Si le bouton est "Afficher les images" afficher la page d'affichage des images
+                Home h = new Home();
+                ShowProjectImages spi = new ShowProjectImages(h, true);
+                spi.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(ViewProject.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -482,7 +499,7 @@ public class ViewProject extends javax.swing.JDialog {
                             for (File image : images){
                                 // Enregistrer les images dans le dossier "projectimages"
                                 // Et enregistrer les chemins des images dans la bdd
-                                String destinationFolder = "D:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages";
+                                String destinationFolder = "F:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages";
 
                                 File destinationDir = new File(destinationFolder);
 
@@ -563,7 +580,11 @@ public class ViewProject extends javax.swing.JDialog {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ViewProject(null, true).setVisible(true);
+                try {
+                    new ViewProject(null, true).setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ViewProject.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

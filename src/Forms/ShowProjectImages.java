@@ -6,30 +6,37 @@ package Forms;
 
 import Dao.DatabaseOperation;
 import Dao.ParametreDeConx;
-import javax.swing.*;
-import java.awt.*;
+import static Forms.ViewProject.nom;
+import static Forms.ViewProject.selectedProjectId;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**
  *
  * @author Giovanni
  */
-public class ImageDisplayApp extends javax.swing.JFrame {
+public class ShowProjectImages extends javax.swing.JDialog {
 
     /**
-     * Creates new form ImageDisplayApp
+     * Creates new form ShowProjectImages
      */
-    public ImageDisplayApp() {
-        setTitle("Images from Database");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1280, 720);
+    public ShowProjectImages(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        setTitle("Images du projet - " + nom);
+        setSize(1200, 700);
 
         JPanel panel = new JPanel(new GridBagLayout());
         JScrollPane scrollPane = new JScrollPane(panel);
@@ -57,9 +64,8 @@ public class ImageDisplayApp extends javax.swing.JFrame {
 
         getContentPane().add(scrollPane);
         setLocationRelativeTo(null);
-        setVisible(true);
     }
-    
+
     // FUNCTIONS
     
     private Image getScaledImage(Image srcImg, int width, int height) {
@@ -83,11 +89,11 @@ public class ImageDisplayApp extends javax.swing.JFrame {
 
         return resizedImg;
     }
-    
+
     private String[] getImagePathsFromDatabase() {
         String[] imagePaths = new String[0];
         ResultSet rs = null;
-        
+
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
@@ -97,14 +103,18 @@ public class ImageDisplayApp extends javax.swing.JFrame {
         try {
             // Exécuter une requête SQL pour récupérer les chemins des images
             String nomTable = "image";
-            rs = operationDb.querySelectAll(nomTable);
-            
+            String whereStatement = "IdProjet = \"" + selectedProjectId + "\"";
+            rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
             // Stocker les chemins des images dans un tableau
             java.util.List<String> imagePathList = new java.util.ArrayList<>();
             while (rs.next()) {
                 imagePathList.add(rs.getString("Contenu"));
             }
-            imagePaths = imagePathList.toArray(new String[0]);
+            imagePaths = imagePathList.toArray(String[]::new);
+            
+            // Fermer les ressources JDBC
+            operationDb.closeconnexion();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -114,9 +124,8 @@ public class ImageDisplayApp extends javax.swing.JFrame {
 
         return imagePaths;
     }
-    
-    // END OF FUNCTIONS
 
+    // END OF FUNCTIONS
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -126,7 +135,7 @@ public class ImageDisplayApp extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -159,20 +168,20 @@ public class ImageDisplayApp extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ImageDisplayApp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ShowProjectImages.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ImageDisplayApp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ShowProjectImages.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ImageDisplayApp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ShowProjectImages.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ImageDisplayApp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ShowProjectImages.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ImageDisplayApp().setVisible(true);
+                new ShowProjectImages(null, true).setVisible(true);
             }
         });
     }

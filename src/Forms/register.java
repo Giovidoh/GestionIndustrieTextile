@@ -6,6 +6,8 @@ package Forms;
 
 import Dao.ParametreDeConx;
 import Dao.DatabaseOperation;
+import static Forms.AlertWarning.AlertWarningMessage;
+import static Forms.AlertWarning.AlertWarningTitle;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,37 +25,35 @@ public class Register extends javax.swing.JDialog {
     /**
      * Creates new form signin
      */
-    public Register(java.awt.Frame parent, boolean modal) {
+    public Register(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
-        
+
         fillFieldsIfExist();
         hideErrorMessages();
         changeFormTitle();
         changeFormStateByTitle();
-        
-        
+
     }
-    
+
     // PROPERTIES
-        // Les titres du formulaire
-        protected String voirRegister = "Voir un employé";
-        protected String ajouterRegister = "Enregistrer un employé";
-        protected String modifierRegister = "Modifier un employé";
-        
-        // Les données entrées dans le formulaire
-        public static String id = "";
-        public static String surname = "";
-        public static String firstname = "";
-        public static String birthDate = "";
-        public static String gender = "";
-        public static String responsibility = "";
-        public static String contact = "";
-        public static String email = "";
+    // Les titres du formulaire
+    protected String voirRegister = "Voir un employé";
+    protected String ajouterRegister = "Enregistrer un employé";
+    protected String modifierRegister = "Modifier un employé";
+
+    // Les données entrées dans le formulaire
+    public static String id = "";
+    public static String surname = "";
+    public static String firstname = "";
+    public static String birthDate = "";
+    public static String gender = "";
+    public static String responsibility = "";
+    public static String contact = "";
+    public static String email = "";
 
     // END OF PROPERTIES
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -384,16 +384,15 @@ public class Register extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     // MY FUNCTIONS
-    
-    private void fillFieldsIfExist(){
+    private void fillFieldsIfExist() throws SQLException {
         // Réaffecter les données précédentes dans les champs s'il y en a.
-        if(!surname.isBlank()){
+        if (!surname.isBlank()) {
             jTextField1.setText(surname);
             jTextField2.setText(firstname);
             jTextField3.setText(birthDate);
-            if(gender.equals("F")){
+            if (gender.equals("F")) {
                 jRadioButton1.setSelected(true);
-            } else if (gender.equals("M")){
+            } else if (gender.equals("M")) {
                 jRadioButton2.setSelected(true);
             }
             jComboBox1.setSelectedItem(responsibility);
@@ -401,7 +400,7 @@ public class Register extends javax.swing.JDialog {
             jFormattedTextField2.setText(email);
         }
     }
-    
+
     private void hideErrorMessages() {
         // Rendre invisible les messages d'erreur
         jLabel5.setVisible(false);
@@ -411,74 +410,74 @@ public class Register extends javax.swing.JDialog {
         jLabel14.setVisible(false);
         jLabel15.setVisible(false);
     }
-    
+
     private void changeFormTitle() {
         // Changer le titre du formulaire
         jLabel1.setText(Home.registerTitre);
     }
-    
+
     private void changeFormStateByTitle() {
         // Changer l'état du formulaire en fonction du titre affiché
-        if(jLabel1.getText().equals(voirRegister)){
+        if (jLabel1.getText().equals(voirRegister)) {
             // Désactiver les champs afin de ne pouvoir voir que leurs contenus
-            jTextField1.setEnabled(false);
-            jTextField2.setEnabled(false);
-            jTextField3.setEnabled(false);
-            jFormattedTextField1.setEnabled(false);
-            jFormattedTextField2.setEnabled(false);
+            jTextField1.setEditable(false);
+            jTextField2.setEditable(false);
+            jTextField3.setEditable(false);
+            jFormattedTextField1.setEditable(false);
+            jFormattedTextField2.setEditable(false);
             jRadioButton1.setEnabled(false);
             jRadioButton2.setEnabled(false);
             jComboBox1.setEnabled(false);
-            
+
             // Cacher le bouton d'enregistrement
             jButton1.setVisible(false);
-        }else if(jLabel1.getText().equals(ajouterRegister)){
+        } else if (jLabel1.getText().equals(ajouterRegister)) {
             // Modifier le texte du bouton d'enregistrement à "Enregistrer"
             jButton1.setText("Enregistrer");
-        }else if(jLabel1.getText().equals(modifierRegister)){
+        } else if (jLabel1.getText().equals(modifierRegister)) {
             // Modifier le texte du bouton d'enregistrement à "Modifier"
             jButton1.setText("Modifier");
         }
     }
-    
+
     private Boolean retrieveFormData() {
         // Vérifier si les champs sont remplis
-        if(jTextField1.getText().isBlank()){
+        if (jTextField1.getText().isBlank()) {
             jLabel5.setVisible(true);
             jLabel7.setVisible(false);
             jLabel10.setVisible(false);
             jLabel11.setVisible(false);
             jLabel14.setVisible(false);
             jLabel15.setVisible(false);
-        }else if(jTextField2.getText().isBlank()){
+        } else if (jTextField2.getText().isBlank()) {
             jLabel5.setVisible(false);
             jLabel7.setVisible(true);
             jLabel10.setVisible(false);
             jLabel11.setVisible(false);
             jLabel14.setVisible(false);
             jLabel15.setVisible(false);
-        }else if(jTextField3.getText().isBlank()){
+        } else if (jTextField3.getText().isBlank()) {
             jLabel5.setVisible(false);
             jLabel7.setVisible(false);
             jLabel10.setVisible(true);
             jLabel11.setVisible(false);
             jLabel14.setVisible(false);
             jLabel15.setVisible(false);
-        }else if (!(jRadioButton1.isSelected() || jRadioButton2.isSelected())){
+        } else if (!(jRadioButton1.isSelected() || jRadioButton2.isSelected())) {
             jLabel5.setVisible(false);
             jLabel7.setVisible(false);
             jLabel10.setVisible(false);
             jLabel11.setVisible(true);
             jLabel14.setVisible(false);
             jLabel15.setVisible(false);
-        }else if (jFormattedTextField1.getText().isBlank()){
+        } else if (jFormattedTextField1.getText().isBlank()) {
             jLabel5.setVisible(false);
             jLabel7.setVisible(false);
             jLabel10.setVisible(false);
             jLabel11.setVisible(false);
             jLabel14.setVisible(true);
             jLabel15.setVisible(false);
-        }else if (jFormattedTextField2.getText().isBlank()){
+        } else if (jFormattedTextField2.getText().isBlank()) {
             jLabel5.setVisible(false);
             jLabel7.setVisible(false);
             jLabel10.setVisible(false);
@@ -487,27 +486,27 @@ public class Register extends javax.swing.JDialog {
             jLabel15.setVisible(true);
         } else {
             hideErrorMessages();
-            
+
             // Récupérer les informations saisies
             surname = jTextField1.getText();
             firstname = jTextField2.getText();
             birthDate = jTextField3.getText();
-            if(jRadioButton1.isSelected()){
+            if (jRadioButton1.isSelected()) {
                 gender = "F";
-            } else if (jRadioButton2.isSelected()){
+            } else if (jRadioButton2.isSelected()) {
                 gender = "M";
             }
             responsibility = (String) jComboBox1.getSelectedItem();
             contact = jFormattedTextField1.getText();
             email = jFormattedTextField2.getText();
-            
+
             return true;
         }
-        
+
         return false;
     }
-    
-    public static void clearEmployeeInfos(){
+
+    public static void clearEmployeeInfos() {
         // Vider les informations de l'employé
         id = "";
         firstname = "";
@@ -518,9 +517,9 @@ public class Register extends javax.swing.JDialog {
         email = "";
         responsibility = "";
     }
-    
+
     // END OF MY FUNCTIONS
-    
+
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
         // Désélectionner le sexe féminin
         jRadioButton1.setSelected(false);
@@ -532,12 +531,12 @@ public class Register extends javax.swing.JDialog {
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+
         // Si le bouton est "Enregistrer"
-        if(jButton1.getText().equals("Enregistrer")){
+        if (jButton1.getText().equals("Enregistrer")) {
             // Vérifier si les champs sont remplis
             Boolean verify = retrieveFormData();
-            
+
             // Afficher le formulaire de création de compte
             if (verify) {
                 try {
@@ -549,7 +548,7 @@ public class Register extends javax.swing.JDialog {
                     Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }else if(jButton1.getText().equals("Modifier")){
+        } else if (jButton1.getText().equals("Modifier")) {
             // Si le bouton est "Modifier"
 
             //// Modifier l'employé
@@ -563,14 +562,14 @@ public class Register extends javax.swing.JDialog {
             String nomTable = "employe";
             String whereStatement = "Id = \"" + id + "\" AND " + "deleted_at IS NULL";
             String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "updated_at"};
-            
+
             String nomEmp = jTextField1.getText();
             String prenomEmp = jTextField2.getText();
             String dateNaisEmp = jTextField3.getText();
             String genreEmp = "";
-            if(jRadioButton1.isSelected()){
+            if (jRadioButton1.isSelected()) {
                 genreEmp = "F";
-            } else if (jRadioButton2.isSelected()){
+            } else if (jRadioButton2.isSelected()) {
                 genreEmp = "M";
             }
             String respoEmp = (String) jComboBox1.getSelectedItem();
@@ -594,7 +593,7 @@ public class Register extends javax.swing.JDialog {
 
             // Raffraîchir la liste des employés
             Home.reloadEmployeesTable = true;
-            
+
             // Vider les informations de l'employé
             clearEmployeeInfos();
 
@@ -636,7 +635,11 @@ public class Register extends javax.swing.JDialog {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Register(null, true).setVisible(true);
+                try {
+                    new Register(null, true).setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

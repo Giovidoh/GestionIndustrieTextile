@@ -37,6 +37,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 
+import static Forms.ViewProject.selectedProjectId;
+import static Forms.ViewProject.nom;
+import static Forms.ViewProject.description;
+import static Forms.ViewProject.statut;
+import static Forms.ViewProject.images;
+
 /**
  *
  * @author HP-PC
@@ -173,7 +179,7 @@ public class Home extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(null));
 
         jButton1.setBackground(new java.awt.Color(153, 204, 255));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -539,6 +545,11 @@ public class Home extends javax.swing.JFrame {
         jTable1.setShowHorizontalLines(true);
         jTable1.getTableHeader().setResizingAllowed(false);
         jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTable1MousePressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jButton4.setBackground(new java.awt.Color(204, 255, 204));
@@ -1276,12 +1287,22 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // Changer la variable titre du formulaire de Projets
-        projetTitre = voirProjet;
+        // Vérifier si une ligne de la table est sélectionnée
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            // Changer la variable titre du formulaire de Projets
+            projetTitre = voirProjet;
 
-        // Ouvrir le formulaire pour voir le projet sélectionné
-        ViewProject view = new ViewProject(this, true);
-        view.setVisible(true);
+            // Ouvrir le formulaire pour voir le projet sélectionné
+            ViewProject view = new ViewProject(this, true);
+            view.setVisible(true);
+        }else{
+            // Envoyer un message d'alerte
+            AlertWarningTitle = "Attention";
+            AlertWarningMessage = "Veuillez choisir un projet pour voir ses informations !";
+            AlertWarning alert = new AlertWarning(this, true);
+            alert.setVisible(true);
+        }
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -1477,6 +1498,16 @@ public class Home extends javax.swing.JFrame {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton13ActionPerformed
+
+    private void jTable1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MousePressed
+        // Récupérer les informations du projet
+        int selectedRow = jTable1.getSelectedRow();
+        
+        selectedProjectId = jTable1.getValueAt(selectedRow, 0).toString();
+        nom = jTable1.getValueAt(selectedRow, 1).toString();
+        description = jTable1.getValueAt(selectedRow, 2).toString();
+        statut = jTable1.getValueAt(selectedRow, 3).toString();
+    }//GEN-LAST:event_jTable1MousePressed
 
     /**
      * @param args the command line arguments
