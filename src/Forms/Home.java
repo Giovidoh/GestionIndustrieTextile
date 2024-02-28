@@ -1303,12 +1303,22 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // Changer la variable titre du formulaire des Employés
-        registerTitre = voirRegister;
+        // Vérifier si une ligne de la table est sélectionnée
+        int selectedRow = jTable2.getSelectedRow();
+        if (selectedRow != -1) {
+            // Changer la variable titre du formulaire des Employés
+            registerTitre = voirRegister;
 
-        // Ouvrir le formulaire pour voir l'employé sélectionné
-        Register register = new Register(this, true);
-        register.setVisible(true);
+            // Ouvrir le formulaire pour voir l'employé sélectionné
+            Register register = new Register(this, true);
+            register.setVisible(true);
+        } else {
+            // Envoyer un message d'alerte
+            AlertWarningTitle = "Attention";
+            AlertWarningMessage = "Veuillez choisir un employé pour voir ses informations !";
+            AlertWarning alert = new AlertWarning(this, true);
+            alert.setVisible(true);
+        }
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -1429,9 +1439,21 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable2MousePressed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // Demander la confirmation de suppression de l'employé
-        DeleteEmployee delete = new DeleteEmployee(this, true);
-        delete.setVisible(true);
+        // Vérifier si une ligne de la table est sélectionnée
+        int selectedRow = jTable2.getSelectedRow();
+        if (selectedRow != -1) {
+            // Demander la confirmation de suppression de l'employé
+            DeleteEmployee delete = new DeleteEmployee(this, true);
+            delete.setVisible(true);
+        } else {
+            // Envoyer un message d'alerte
+            AlertWarningTitle = "Attention";
+            AlertWarningMessage = "Veuillez choisir l'employé à supprimer !";
+            AlertWarning alert = new AlertWarning(this, true);
+            alert.setVisible(true);
+        }
+        
+        
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed

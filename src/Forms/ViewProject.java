@@ -296,6 +296,9 @@ public class ViewProject extends javax.swing.JDialog {
             jTextField1.setEnabled(false);
             jTextArea1.setEnabled(false);
             jComboBox1.setEnabled(false);
+            
+            // Changer le bouton d'importation d'image en bouton d'affichage
+            jButton3.setText("Afficher les images");
 
             // Cacher le bouton d'enregistrement
             jButton1.setVisible(false);
@@ -409,20 +412,26 @@ public class ViewProject extends javax.swing.JDialog {
     // END OF FUNCTIONS
     
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setMultiSelectionEnabled(true); // Autorise la sélection multiple
+        if(jButton3.getText().equals("Importer")){
+            // Si le bouton est "Importer"
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setMultiSelectionEnabled(true); // Autorise la sélection multiple
 
-        // Créer un filtre pour n'afficher que les fichiers avec les extensions d'images courantes
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Images", "jpg", "jpeg", "png");
-        fileChooser.setFileFilter(filter);
+            // Créer un filtre pour n'afficher que les fichiers avec les extensions d'images courantes
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    "Images", "jpg", "jpeg", "png");
+            fileChooser.setFileFilter(filter);
 
-        int result = fileChooser.showOpenDialog(null);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File[] selectedFiles = fileChooser.getSelectedFiles();
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File[] selectedFiles = fileChooser.getSelectedFiles();
 
-            // Renvoyer les images sélectionnées dans la variable statique appropriée
-            images = selectedFiles;
+                // Renvoyer les images sélectionnées dans la variable statique appropriée
+                images = selectedFiles;
+
+            }
+        }else if (jButton3.getText().equals("Afficher les images")){
+            // Si le bouton est "Afficher les images"
             
         }
 
