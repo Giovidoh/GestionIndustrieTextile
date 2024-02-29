@@ -53,7 +53,7 @@ public class ViewProject extends javax.swing.JDialog {
         changeFormTitle();
         changeFormStateByTitle();
         fillFieldsIfExist();
-        
+
     }
 
     // PROPERTIES
@@ -285,20 +285,20 @@ public class ViewProject extends javax.swing.JDialog {
         jLabel5.setVisible(false);
         jLabel8.setVisible(false);
     }
-    
-    private void changeFormTitle(){
+
+    private void changeFormTitle() {
         // Changer le titre du formulaire
         jLabel1.setText(Home.projetTitre);
     }
-    
-    private void changeFormStateByTitle(){
+
+    private void changeFormStateByTitle() {
         // Changer l'état du formulaire en fonction du titre affiché
         if (jLabel1.getText().equals(voirTitre)) {
             // Désactiver les champs afin de ne pouvoir voir que leurs contenus
             jTextField1.setEditable(false);
             jTextArea1.setEditable(false);
             jComboBox1.setEnabled(false);
-            
+
             // Changer le bouton d'importation d'image en bouton d'affichage
             jButton3.setText("Afficher les images");
 
@@ -312,7 +312,7 @@ public class ViewProject extends javax.swing.JDialog {
             jButton1.setText("Modifier");
         }
     }
-    
+
     private void fillFieldsIfExist() throws SQLException {
         // Réaffecter les données précédentes dans les champs s'il y en a.
         if (!selectedProjectId.isBlank()) {
@@ -358,72 +358,72 @@ public class ViewProject extends javax.swing.JDialog {
         // Vérifier si un projet avec le même nom existe déjà
         String nomTable = "projet";
         String whereStatement = "NomProjet = \"" + nom
-                                + "\" AND deleted_at IS NULL";
+                + "\" AND deleted_at IS NULL";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
 
         ResultSetTableModel result = new ResultSetTableModel(rs);
         if (result.getRowCount() > 0) {
             found = true;
         }
-        
+
         operationDb.closeconnexion();
 
         return found;
     }
-    
+
     private static String saveImageToDirectory(File imageFile, File destinationDir) throws IOException {
         // Vérifie si le dossier de destination existe, sinon le crée
         if (!destinationDir.exists()) {
             destinationDir.mkdirs();
         }
-        
+
         // Obtenir le nom du fichier actuel
         String originalFileName = imageFile.getName();
-        
+
         // Obtenir le timestamp actuel
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         String timestamp = dateFormat.format(new Date());
-        
+
         // Créer le nouveau nom de fichier avec le nom du fichier actuel et le timestamp
         String[] fileNameParts = originalFileName.split("\\."); // Split le nom de fichier par le point pour obtenir l'extension
         String fileExtension = fileNameParts.length > 1 ? "." + fileNameParts[fileNameParts.length - 1] : "";
         String newFileName = fileNameParts[0] + "_" + timestamp + fileExtension;
-        
+
         // Copie le fichier image vers le dossier de destination
         Path sourcePath = imageFile.toPath();
         Path destinationPath = Paths.get(destinationDir.getAbsolutePath(), newFileName);
         Files.copy(sourcePath, destinationPath);
 
         System.out.println("Image enregistrée dans : " + destinationPath);
-        
+
         return destinationPath.toString();
     }
-    
+
     private static void saveImagePathToDatabase(String savedImagePath) throws SQLException {
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
         String password = ParametreDeConx.PASSWORD_DB;
         DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-        
+
         try {
             String nomTable = "image";
             String[] nomColonne = {"Contenu", "IdEmploye"};
-            
+
             String[] contenuTableau = {savedImagePath.replace("\\", "/"), UserId};
-            
+
             operationDb.queryInsertPrecise(nomTable, nomColonne, contenuTableau);
-            
+
             System.out.println("Chemin de l'image enregistré dans la base de données.");
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println("Erreur lors de l'enregistrement de l'image dans la bdd : " + ex);
         }
     }
 
     // END OF FUNCTIONS
-    
+
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        if(jButton3.getText().equals("Importer")){
+        if (jButton3.getText().equals("Importer")) {
             // Si le bouton est "Importer"
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setMultiSelectionEnabled(true); // Autorise la sélection multiple
@@ -441,7 +441,7 @@ public class ViewProject extends javax.swing.JDialog {
                 images = selectedFiles;
 
             }
-        }else if (jButton3.getText().equals("Afficher les images")){
+        } else if (jButton3.getText().equals("Afficher les images")) {
             try {
                 // Si le bouton est "Afficher les images" afficher la page d'affichage des images
                 Home h = new Home();
@@ -473,7 +473,7 @@ public class ViewProject extends javax.swing.JDialog {
                     String username = ParametreDeConx.USERNAME_DB;
                     String password = ParametreDeConx.PASSWORD_DB;
                     DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-                    
+
                     try {
                         //// Enregistrement du nouveau projet
                         String nomTable = "projet";
@@ -493,10 +493,42 @@ public class ViewProject extends javax.swing.JDialog {
                         // Appliquer la requête d'insertion
                         String createProject = operationDb.queryInsertPrecise(nomTable, nomColonne, contenuTableau);
                         //// Fin Enregistrement du nouveau projet
-                        
+
+                        //// Enregistrer le responsable designer par défaut sur le projet si le statut est "Publié"
+                        if (statut.equals(ProjectStatuses.publie)) {
+                            String nomTable2 = "designer_projet";
+                            String[] nomColonne2 = {"IdProjet", "IdDesigner"};
+
+                            // Récupérer l'id du projet
+                            String projetId = null;
+                            String nomTable3 = "projet";
+                            String whereStatement3 = "NomProjet = \"" + nom + "\""
+                                                + " AND deleted_at IS NULL";
+                            ResultSet rs3 = operationDb.querySelectAllWhere(nomTable3, whereStatement3);
+                            if (rs3.next()) {
+                                projetId = rs3.getString("Id");
+                            }
+
+                            // Récupérer l'id du responsable des designers
+                            String designerResponsibleId = null;
+                            String nomTable4 = "employe";
+                            String whereStatement4 = "RespoEmp = \"" + EmployeesResponsibilities.designer + "\""
+                                    + " AND Responsable = 1";
+                            ResultSet rs4 = operationDb.querySelectAllWhere(nomTable4, whereStatement4);
+                            if (rs4.next()) {
+                                designerResponsibleId = rs4.getString("Id");
+                            }
+
+                            String[] contenuTableau2 = {projetId, designerResponsibleId};
+
+                            // Affecter le responsable designer au projet
+                            String addDesignerResponsibleToProject = operationDb.queryInsertPrecise(nomTable2, nomColonne2, contenuTableau2);
+                        }
+                        //// Fin Enregistrer le responsable designer par défaut sur le projet si le statut est "Publié"
+
                         //// Enregistrement des images liées au projet
-                        if(images.length > 0){
-                            for (File image : images){
+                        if (images.length > 0) {
+                            for (File image : images) {
                                 // Enregistrer les images dans le dossier "projectimages"
                                 // Et enregistrer les chemins des images dans la bdd
                                 String destinationFolder = "F:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages";
@@ -514,7 +546,7 @@ public class ViewProject extends javax.swing.JDialog {
                                 } catch (IOException ex) {
                                     Logger.getLogger(ViewProject.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                                
+
                             }
                         }
                         //// Fin Enregistrement des images liées au projet

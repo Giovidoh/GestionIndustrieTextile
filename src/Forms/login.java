@@ -195,6 +195,7 @@ public class Login extends javax.swing.JFrame {
     // Variables statiques de l'identifiant de l'utilisateur
     public static String UserId;
     public static String UserName;
+    public static String UserResponsible;
     
     // END OF PROPERTIES
     
@@ -237,6 +238,7 @@ public class Login extends javax.swing.JFrame {
                 // Enregistrer les identifiants de l'utilisateur connecté
                 UserName = name;
                 UserId = rs.getString("Id");
+                UserResponsible = rs.getString("Responsable");
                 
                 super.dispose();
                 // Si l'utilisateur est un créateur

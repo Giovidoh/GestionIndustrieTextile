@@ -45,7 +45,9 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
     private static List<String> selectedDesignersIds = new ArrayList<>();
 
     // END OF PROPERTIES
+    
     // FUNCTIONS
+    
     private void tableStyle() {
         // Style de tableau
 
@@ -154,54 +156,12 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
         if (result.getRowCount() > 0) {
 
             for (int i = 0; i < result.getRowCount(); i++) {
-
                 // Id du designer
                 Object idEmp = result.getValueAt(i, 1).toString();
 
                 // Ajouter l'id à la liste des ids des designers sélectionnés
                 selectedDesignersIds.add(idEmp.toString());
-                /*
-                // Récupérer les informations du designer
-                String nomTable2 = "employe";
-                String whereStatement2 = "Id = \"" + idEmp + "\"";
-                ResultSet rs2 = operationDb.querySelectAllWhere(nomTable2, whereStatement2);
-
-                ResultSetTableModel result2 = new ResultSetTableModel(rs2);
-
-                Object[] ligne = new Object[4];
-
-                Object surnameEmp = result2.getValueAt(i, 1).toString();
-                Object firstnameEmp = result2.getValueAt(i, 2).toString();
-                String birthDateEmp = result2.getValueAt(i, 3).toString();
-                Object genderEmp = result2.getValueAt(i, 4).toString();
-
-                ligne[0] = idEmp;
-                ligne[1] = surnameEmp + " " + firstnameEmp;
-                ligne[2] = genderEmp;
-
-                // Calculer l'âge de l'employé
-                String year = birthDateEmp.substring(0, 4);
-                String month = birthDateEmp.substring(5, 7);
-                String day = birthDateEmp.substring(8, 10);
-                int yearInt = Integer.parseInt(year);
-                int monthInt = Integer.parseInt(month);
-                int dayInt = Integer.parseInt(day);
-                LocalDate date = LocalDate.of(yearInt, monthInt, dayInt);
-                LocalDate currentDateTime = ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
-
-                Period period = Period.between(date, currentDateTime);
-
-                int age = period.getYears();
-
-                ligne[3] = age;
-
-                // table.setValueAt(idEmp, i, 0);
-                // table.setValueAt(familyName, i, 1);
-                // table.setValueAt(firstName, i, 2);
-                // table.setValueAt(address, i, 3);
-                tableModel.addRow(ligne);*/
             }
-            // table.setModel(tableModel);
         }
 
         operationDb.closeconnexion();

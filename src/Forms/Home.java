@@ -1308,6 +1308,13 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // Réinitialiser les variables statiques des données d'enregistrement
+        // d'un projet
+        selectedProjectId = "";
+        nom = "";
+        description = "";
+        statut = "";
+        
         try {
             // Changer la variable titre du formulaire de Projets
             projetTitre = ajouterProjet;

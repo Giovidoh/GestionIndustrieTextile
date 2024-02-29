@@ -17,7 +17,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -34,6 +36,7 @@ public class HomeDesigner extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         
         tableStyle();
+        changeFormStateOnResponsibility();
         
         // Remplir la liste des projets
         fillProjectsTable(jTable1);
@@ -61,6 +64,21 @@ public class HomeDesigner extends javax.swing.JFrame {
         jTable2.getTableHeader().setBackground(new Color(77, 157, 221));
         
         // Fin style de tableau
+    }
+    
+    
+    private void changeFormStateOnResponsibility(){
+        // Récupérer le JFrame parent
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(jTabbedPane1);
+        
+        // Changer le titre
+        if (Login.UserResponsible.equals("1")){
+            frame.setTitle("Espace de travail - " + Login.UserName + " - Responsable Designer");
+        }else{
+            frame.setTitle("Espace de travail - " + Login.UserName + " - Designer");
+        }
+        
+        // Changer les boutons disponibles
     }
     
     public void fillProjectsTable(JTable table) {
@@ -137,7 +155,8 @@ public class HomeDesigner extends javax.swing.JFrame {
 
         // Récupérer les informations à afficher
         String nomTable = "employe";
-        String whereStatement = "deleted_at IS NULL";
+        String whereStatement = "deleted_at IS NULL"
+                            + " AND RespoEmp = \"" + EmployeesResponsibilities.designer + "\"";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
 
         ResultSetTableModel result = new ResultSetTableModel(rs);
@@ -159,12 +178,6 @@ public class HomeDesigner extends javax.swing.JFrame {
                 Object firstnameEmp = result.getValueAt(i, 2).toString();
                 String birthDateEmp = result.getValueAt(i, 3).toString();
                 Object genderEmp = result.getValueAt(i, 4).toString();
-                Object responsibilityEmp = result.getValueAt(i, 5).toString();
-                Object contactEmp = result.getValueAt(i, 6).toString();
-                Object emailEmp = result.getValueAt(i, 7).toString();
-                Object identifiantEmp = result.getValueAt(i, 8).toString();
-
-                Object address = result.getValueAt(i, 3).toString();
 
                 ligne[0] = idEmp;
                 ligne[1] = surnameEmp + " " + firstnameEmp;
@@ -185,8 +198,6 @@ public class HomeDesigner extends javax.swing.JFrame {
                 int age = period.getYears();
 
                 ligne[3] = age;
-
-                ligne[4] = responsibilityEmp;
 
                 // table.setValueAt(idEmp, i, 0);
                 // table.setValueAt(familyName, i, 1);
@@ -651,10 +662,7 @@ public class HomeDesigner extends javax.swing.JFrame {
         jTable2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "N°", "Nom & Prénoms", "Genre", "Age"
