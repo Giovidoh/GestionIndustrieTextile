@@ -4,8 +4,21 @@
  */
 package Forms;
 
+import Dao.DatabaseOperation;
+import Dao.ParametreDeConx;
+import Dao.ResultSetTableModel;
 import java.awt.Color;
 import java.awt.Font;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -20,6 +33,25 @@ public class HomeDesigner extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
+        tableStyle();
+        
+        // Remplir la liste des projets
+        fillProjectsTable(jTable1);
+
+        // Remplir la liste des employés
+        fillDesignersTable(jTable2);
+    }
+    
+    // PROPERTIES
+    
+    // Variable statique de l'id projet sélectionné dans la table
+    public static String selectedProjectId;
+    
+    // END OF PROPERTIES
+    
+    // FUNCTIONS
+    
+    private void tableStyle() {
         // Style de tableau
         
         jTable1.getTableHeader().setFont( new Font("Segoe UI", Font.BOLD, 14));
@@ -30,6 +62,147 @@ public class HomeDesigner extends javax.swing.JFrame {
         
         // Fin style de tableau
     }
+    
+    public void fillProjectsTable(JTable table) {
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        // Récupérer les informations à afficher
+        String nomTable = "projet";
+        String whereStatement = "deleted_at IS NULL"
+                            + " AND StatutProjet = \"" + ProjectStatuses.publie + "\"";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+
+        // Modèle qui sera affiché dans la table
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+
+        // Vider le modèle
+        tableModel.setRowCount(0);
+
+        // Vérifier s'il y a des projets enregistrés et les afficher dans la table
+        if (result.getRowCount() > 0) {
+            for (int i = 0; i < result.getRowCount(); i++) {
+
+                try {
+                    Object[] ligne = new Object[5];
+
+                    Object idProj = result.getValueAt(i, 0).toString();
+                    Object nomProj = result.getValueAt(i, 1).toString();
+                    Object descriptionProj = result.getValueAt(i, 2).toString();
+                    Object statutProj = result.getValueAt(i, 3).toString();
+                    Object createurProj = null;
+
+                    // Rechercher le nom complet du créateur du projet
+                    Object idCreateurProj = result.getValueAt(i, 4).toString();
+                    String nomTable2 = "projet, employe";
+                    String whereStatement2 = "employe.Id = projet.IdCreateur"
+                                            + " AND projet.deleted_at IS NULL";
+                    ResultSet rs2 = operationDb.querySelectAllWhere(nomTable2, whereStatement2);
+
+                    if (rs2.next()) {
+                        createurProj = rs2.getString("NomEmp") + " " + rs2.getString("PrenomEmp");
+
+                        ligne[0] = idProj;
+                        ligne[1] = nomProj;
+                        ligne[2] = descriptionProj;
+                        ligne[3] = statutProj;
+                        ligne[4] = createurProj;
+
+                        tableModel.addRow(ligne);
+                    }
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            table.setModel(tableModel);
+
+        }
+        
+        operationDb.closeconnexion();
+    }
+
+    public void fillDesignersTable(JTable table) {
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        // Récupérer les informations à afficher
+        String nomTable = "employe";
+        String whereStatement = "deleted_at IS NULL";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+
+        // Modèle qui sera affiché dans la table
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+
+        // Vider le modèle
+        tableModel.setRowCount(0);
+
+        // Vérifier s'il y a des utilisateurs enregistrés et les afficher dans la table
+        if (result.getRowCount() > 0) {
+            for (int i = 0; i < result.getRowCount(); i++) {
+
+                Object[] ligne = new Object[5];
+
+                Object idEmp = result.getValueAt(i, 0).toString();
+                Object surnameEmp = result.getValueAt(i, 1).toString();
+                Object firstnameEmp = result.getValueAt(i, 2).toString();
+                String birthDateEmp = result.getValueAt(i, 3).toString();
+                Object genderEmp = result.getValueAt(i, 4).toString();
+                Object responsibilityEmp = result.getValueAt(i, 5).toString();
+                Object contactEmp = result.getValueAt(i, 6).toString();
+                Object emailEmp = result.getValueAt(i, 7).toString();
+                Object identifiantEmp = result.getValueAt(i, 8).toString();
+
+                Object address = result.getValueAt(i, 3).toString();
+
+                ligne[0] = idEmp;
+                ligne[1] = surnameEmp + " " + firstnameEmp;
+                ligne[2] = genderEmp;
+
+                // Calculer l'âge de l'employé
+                String year = birthDateEmp.substring(0, 4);
+                String month = birthDateEmp.substring(5, 7);
+                String day = birthDateEmp.substring(8, 10);
+                int yearInt = Integer.parseInt(year);
+                int monthInt = Integer.parseInt(month);
+                int dayInt = Integer.parseInt(day);
+                LocalDate date = LocalDate.of(yearInt, monthInt, dayInt);
+                LocalDate currentDateTime = ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
+
+                Period period = Period.between(date, currentDateTime);
+
+                int age = period.getYears();
+
+                ligne[3] = age;
+
+                ligne[4] = responsibilityEmp;
+
+                // table.setValueAt(idEmp, i, 0);
+                // table.setValueAt(familyName, i, 1);
+                // table.setValueAt(firstName, i, 2);
+                // table.setValueAt(address, i, 3);
+                tableModel.addRow(ligne);
+            }
+
+            table.setModel(tableModel);
+
+        }
+        
+        operationDb.closeconnexion();
+    }
+    
+    // END OF FUNCTIONS
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -326,7 +499,7 @@ public class HomeDesigner extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jSeparator1)
                         .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(354, Short.MAX_VALUE))
+                .addContainerGap(344, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -357,20 +530,17 @@ public class HomeDesigner extends javax.swing.JFrame {
         jTable1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "N°", "Nom", "Description", "Statut"
+                "N°", "Nom", "Description", "Statut", "Créateur"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -391,6 +561,11 @@ public class HomeDesigner extends javax.swing.JFrame {
         jTable1.setShowHorizontalLines(true);
         jTable1.getTableHeader().setResizingAllowed(false);
         jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTable1MousePressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jButton4.setBackground(new java.awt.Color(204, 255, 204));
@@ -428,23 +603,20 @@ public class HomeDesigner extends javax.swing.JFrame {
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addGap(36, 36, 36)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jSeparator2)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 725, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(30, 30, 30))))
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jSeparator2)
+                        .addComponent(jLabel4))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 725, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(24, 24, 24))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -543,9 +715,9 @@ public class HomeDesigner extends javax.swing.JFrame {
                         .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 725, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
+                        .addGap(27, 27, 27)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                            .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
                             .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(37, 37, 37))
         );
@@ -568,7 +740,7 @@ public class HomeDesigner extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("designers", jPanel6);
 
-        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, -34, 1020, 740));
+        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 0, 1010, 740));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -635,6 +807,14 @@ public class HomeDesigner extends javax.swing.JFrame {
         Login login = new Login();
         login.setVisible(true);
     }//GEN-LAST:event_jButton14ActionPerformed
+
+    private void jTable1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MousePressed
+        // Renseigner l'id du projet sélectionné dans la variable statique
+        DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
+        int selectedRow = jTable1.getSelectedRow();
+        selectedProjectId = tableModel.getValueAt(selectedRow, 0).toString();
+        System.out.println(selectedProjectId);
+    }//GEN-LAST:event_jTable1MousePressed
 
     /**
      * @param args the command line arguments

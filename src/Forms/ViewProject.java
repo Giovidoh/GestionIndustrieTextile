@@ -63,11 +63,11 @@ public class ViewProject extends javax.swing.JDialog {
     protected String modifierTitre = "Modifier un projet";
 
     // Variables statiques des informations du projet
-    public static String selectedProjectId;
-    public static String nom;
-    public static String description;
-    public static String statut;
-    public static File[] images;
+    public static String selectedProjectId = "";
+    public static String nom = "";
+    public static String description = "";
+    public static String statut = "";
+    public static File[] images = {};
 
     // END OF PROPERTIES
     /**
@@ -161,7 +161,7 @@ public class ViewProject extends javax.swing.JDialog {
         jLabel6.setText("Statut");
 
         jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pas encore commencé", "En cours", "Terminé", "Brouillon" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Brouillon", "Publié" }));
         jComboBox1.setBorder(null);
 
         jButton1.setBackground(new java.awt.Color(204, 255, 255));
@@ -297,7 +297,7 @@ public class ViewProject extends javax.swing.JDialog {
             // Désactiver les champs afin de ne pouvoir voir que leurs contenus
             jTextField1.setEditable(false);
             jTextArea1.setEditable(false);
-            jComboBox1.setEditable(false);
+            jComboBox1.setEnabled(false);
             
             // Changer le bouton d'importation d'image en bouton d'affichage
             jButton3.setText("Afficher les images");

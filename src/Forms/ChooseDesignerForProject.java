@@ -4,6 +4,21 @@
  */
 package Forms;
 
+import Dao.DatabaseOperation;
+import Dao.ParametreDeConx;
+import Dao.ResultSetTableModel;
+import java.awt.Color;
+import java.awt.Font;
+import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Giovanni
@@ -16,9 +31,302 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
     public ChooseDesignerForProject(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        tableStyle();
         setLocationRelativeTo(null);
+
+        fillDesignersTable(jTable1);
+
+        fillSelectedDesignersTable(jTable2);
+        addASpecificDesignerToProject(jTable1, jTable2, selectedDesignersIds);
     }
 
+    // PROPERTIES
+    // Tableau statique des ids des designers sélectionnés pour le projet
+    private static List<String> selectedDesignersIds = new ArrayList<>();
+
+    // END OF PROPERTIES
+    // FUNCTIONS
+    private void tableStyle() {
+        // Style de tableau
+
+        jTable1.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        jTable1.getTableHeader().setBackground(new Color(77, 157, 221));
+
+        jTable2.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        jTable2.getTableHeader().setBackground(new Color(77, 157, 221));
+
+        // Fin style de tableau
+    }
+
+    // Afficher les designers non choisis pour le projet
+    public void fillDesignersTable(JTable table) {
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        // Récupérer les informations à afficher
+        String nomTable = "employe";
+        String whereStatement = "deleted_at IS NULL"
+                + " AND RespoEmp = \"" + EmployeesResponsibilities.designer + "\"";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+
+        // Modèle qui sera affiché dans la table
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+
+        // Vider le modèle
+        tableModel.setRowCount(0);
+
+        // Vérifier s'il y a des utilisateurs enregistrés et les afficher dans la table
+        if (result.getRowCount() > 0) {
+            for (int i = 0; i < result.getRowCount(); i++) {
+
+                Object[] ligne = new Object[5];
+
+                Object idEmp = result.getValueAt(i, 0).toString();
+                Object surnameEmp = result.getValueAt(i, 1).toString();
+                Object firstnameEmp = result.getValueAt(i, 2).toString();
+                String birthDateEmp = result.getValueAt(i, 3).toString();
+                Object genderEmp = result.getValueAt(i, 4).toString();
+
+                ligne[0] = idEmp;
+                ligne[1] = surnameEmp + " " + firstnameEmp;
+                ligne[2] = genderEmp;
+
+                // Calculer l'âge de l'employé
+                String year = birthDateEmp.substring(0, 4);
+                String month = birthDateEmp.substring(5, 7);
+                String day = birthDateEmp.substring(8, 10);
+                int yearInt = Integer.parseInt(year);
+                int monthInt = Integer.parseInt(month);
+                int dayInt = Integer.parseInt(day);
+                LocalDate date = LocalDate.of(yearInt, monthInt, dayInt);
+                LocalDate currentDateTime = ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
+
+                Period period = Period.between(date, currentDateTime);
+
+                int age = period.getYears();
+
+                ligne[3] = age;
+
+                // table.setValueAt(idEmp, i, 0);
+                // table.setValueAt(familyName, i, 1);
+                // table.setValueAt(firstName, i, 2);
+                // table.setValueAt(address, i, 3);
+                tableModel.addRow(ligne);
+            }
+
+            table.setModel(tableModel);
+
+        }
+
+        operationDb.closeconnexion();
+    }
+
+    // Afficher les Designers choisis pour le projet
+    public void fillSelectedDesignersTable(JTable table) {
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        // Récupérer les designers affectés au projet
+        String nomTable = "designer_projet";
+        String whereStatement = "IdProjet = \"" + HomeDesigner.selectedProjectId + "\"";
+        ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
+
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+
+        // Modèle qui sera affiché dans la table
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+
+        // Vider le modèle
+        tableModel.setRowCount(0);
+
+        // Vider la liste des designers affectés au projet
+        selectedDesignersIds.clear();
+
+        // Vérifier s'il y a des designers affectés au projet et les afficher dans la table
+        if (result.getRowCount() > 0) {
+
+            for (int i = 0; i < result.getRowCount(); i++) {
+
+                // Id du designer
+                Object idEmp = result.getValueAt(i, 1).toString();
+
+                // Ajouter l'id à la liste des ids des designers sélectionnés
+                selectedDesignersIds.add(idEmp.toString());
+                /*
+                // Récupérer les informations du designer
+                String nomTable2 = "employe";
+                String whereStatement2 = "Id = \"" + idEmp + "\"";
+                ResultSet rs2 = operationDb.querySelectAllWhere(nomTable2, whereStatement2);
+
+                ResultSetTableModel result2 = new ResultSetTableModel(rs2);
+
+                Object[] ligne = new Object[4];
+
+                Object surnameEmp = result2.getValueAt(i, 1).toString();
+                Object firstnameEmp = result2.getValueAt(i, 2).toString();
+                String birthDateEmp = result2.getValueAt(i, 3).toString();
+                Object genderEmp = result2.getValueAt(i, 4).toString();
+
+                ligne[0] = idEmp;
+                ligne[1] = surnameEmp + " " + firstnameEmp;
+                ligne[2] = genderEmp;
+
+                // Calculer l'âge de l'employé
+                String year = birthDateEmp.substring(0, 4);
+                String month = birthDateEmp.substring(5, 7);
+                String day = birthDateEmp.substring(8, 10);
+                int yearInt = Integer.parseInt(year);
+                int monthInt = Integer.parseInt(month);
+                int dayInt = Integer.parseInt(day);
+                LocalDate date = LocalDate.of(yearInt, monthInt, dayInt);
+                LocalDate currentDateTime = ZonedDateTime.now(ZoneId.of("UTC")).toLocalDate();
+
+                Period period = Period.between(date, currentDateTime);
+
+                int age = period.getYears();
+
+                ligne[3] = age;
+
+                // table.setValueAt(idEmp, i, 0);
+                // table.setValueAt(familyName, i, 1);
+                // table.setValueAt(firstName, i, 2);
+                // table.setValueAt(address, i, 3);
+                tableModel.addRow(ligne);*/
+            }
+            // table.setModel(tableModel);
+        }
+
+        operationDb.closeconnexion();
+    }
+
+    private void addDesignerToProjectInDb() {
+        // Supprimer tous les liens des designers avec le projet
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        String nomTable = "designer_projet";
+        String whereStatement = "IdProjet = \"" + HomeDesigner.selectedProjectId + "\"";
+        String rs = operationDb.queryDeleteWhere(nomTable, whereStatement);
+
+        operationDb.closeconnexion();
+        // Ajoute les designers au projet
+        DefaultTableModel tableModel2 = (DefaultTableModel) jTable2.getModel();
+        for (int row = 0; row < tableModel2.getRowCount(); row++) {
+            String id = tableModel2.getValueAt(row, 0).toString();
+
+            nomTable = "designer_projet";
+            whereStatement = "IdProjet = \"" + HomeDesigner.selectedProjectId + "\"";
+            String[] nomColonne = {"IdProjet", "IdDesigner"};
+            String[] contenuTableau = {HomeDesigner.selectedProjectId, id};
+            rs = operationDb.queryInsertPrecise(nomTable, nomColonne, contenuTableau);
+        }
+    }
+
+    private void addAllDesignersToProject(JTable table1, JTable table2) {
+        // Ajouter tous les designers au projet
+        DefaultTableModel tableModel1 = (DefaultTableModel) table1.getModel();
+        DefaultTableModel tableModel2 = (DefaultTableModel) table2.getModel();
+        for (int i = tableModel1.getRowCount() - 1; i >= 0; i--) {
+            Object[] rowData = new Object[tableModel1.getColumnCount()];
+            for (int j = 0; j < tableModel1.getColumnCount(); j++) {
+                rowData[j] = tableModel1.getValueAt(i, j);
+            }
+            tableModel2.addRow(rowData);
+            tableModel1.removeRow(i);
+        }
+        
+        // Mettre à jour les designers affectés au projet dans la bdd
+        addDesignerToProjectInDb();
+    }
+
+    private void addDesignerToProject(JTable table1, JTable table2) {
+        int selectedRow = table1.getSelectedRow();
+        DefaultTableModel tableModel1 = (DefaultTableModel) table1.getModel();
+        DefaultTableModel tableModel2 = (DefaultTableModel) table2.getModel();
+        if (selectedRow != -1) {
+            // Récupérer les données de la ligne sélectionnée dans la table 1
+            Object[] rowData = new Object[tableModel1.getColumnCount()];
+            for (int i = 0; i < tableModel1.getColumnCount(); i++) {
+                rowData[i] = tableModel1.getValueAt(selectedRow, i);
+            }
+            // Ajouter les données à la table 2
+            tableModel2.addRow(rowData);
+            // Supprimer la ligne de la table 1
+            tableModel1.removeRow(selectedRow);
+        }
+        
+        // Mettre à jour les designers affectés au projet dans la bdd
+        addDesignerToProjectInDb();
+    }
+
+    private void addASpecificDesignerToProject(JTable table1, JTable table2, List<String> ids) {
+        DefaultTableModel tableModel1 = (DefaultTableModel) table1.getModel();
+        DefaultTableModel tableModel2 = (DefaultTableModel) table2.getModel();
+        for (int row = tableModel1.getRowCount() - 1; row >= 0; row--) {
+            String id = (String) tableModel1.getValueAt(row, 0);
+            if (ids.contains(id)) {
+                // Récupérer les données de la ligne de la table 1
+                Object[] rowData = new Object[tableModel1.getColumnCount()];
+                for (int i = 0; i < tableModel1.getColumnCount(); i++) {
+                    rowData[i] = tableModel1.getValueAt(row, i);
+                }
+                // Ajouter les données à la table 2
+                tableModel2.addRow(rowData);
+                // Supprimer la ligne de la table 1
+                tableModel1.removeRow(row);
+            }
+        }
+    }
+
+    private void removeAllDesignersFromProject(JTable table1, JTable table2) {
+        // Retirer tous les designers du projet
+        DefaultTableModel tableModel1 = (DefaultTableModel) table1.getModel();
+        DefaultTableModel tableModel2 = (DefaultTableModel) table2.getModel();
+        for (int i = tableModel2.getRowCount() - 1; i >= 0; i--) {
+            Object[] rowData = new Object[tableModel2.getColumnCount()];
+            for (int j = 0; j < tableModel2.getColumnCount(); j++) {
+                rowData[j] = tableModel2.getValueAt(i, j);
+            }
+            tableModel1.addRow(rowData);
+            tableModel2.removeRow(i);
+        }
+        
+        // Mettre à jour les designers affectés au projet dans la bdd
+        addDesignerToProjectInDb();
+    }
+
+    private void removeDesignerFromProject(JTable table1, JTable table2) {
+        int selectedRow = table2.getSelectedRow();
+        DefaultTableModel tableModel1 = (DefaultTableModel) table1.getModel();
+        DefaultTableModel tableModel2 = (DefaultTableModel) table2.getModel();
+        if (selectedRow != -1) {
+            // Récupérer les données de la ligne sélectionnée dans la table 2
+            Object[] rowData = new Object[tableModel2.getColumnCount()];
+            for (int i = 0; i < tableModel2.getColumnCount(); i++) {
+                rowData[i] = tableModel2.getValueAt(selectedRow, i);
+            }
+            // Ajouter les données à la table 1
+            tableModel1.addRow(rowData);
+            // Supprimer la ligne de la table 2
+            tableModel2.removeRow(selectedRow);
+        }
+        
+        // Mettre à jour les designers affectés au projet dans la bdd
+        addDesignerToProjectInDb();
+    }
+
+    // END OF FUNCTIONS
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,7 +349,7 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
         jButton7 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Choisir les designer du projet");
+        setTitle("Choisir les designers du projet");
 
         jPanel1.setBackground(new java.awt.Color(77, 157, 221));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 700));
@@ -52,13 +360,10 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
         jTable2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "N°", "Nom", "Description", "Statut"
+                "N°", "Nom & Prénoms", "Genre", "Age"
             }
         ) {
             Class[] types = new Class [] {
@@ -96,12 +401,22 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
         jButton8.setText("< Retirer");
         jButton8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton8.setFocusPainted(false);
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jButton9.setBackground(new java.awt.Color(51, 204, 255));
         jButton9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton9.setText("<< Retirer Tout");
         jButton9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton9.setFocusPainted(false);
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -135,13 +450,10 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
         jTable1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "N°", "Nom", "Description", "Statut"
+                "N°", "Nom & Prénoms", "Genre", "Age"
             }
         ) {
             Class[] types = new Class [] {
@@ -179,12 +491,22 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
         jButton6.setText("Ajouter tout >>");
         jButton6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton6.setFocusPainted(false);
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton7.setBackground(new java.awt.Color(51, 204, 255));
         jButton7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton7.setText("Ajouter >");
         jButton7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton7.setFocusPainted(false);
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -243,6 +565,22 @@ public class ChooseDesignerForProject extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        addDesignerToProject(jTable1, jTable2);
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        removeDesignerFromProject(jTable1, jTable2);
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        addAllDesignersToProject(jTable1, jTable2);
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        removeAllDesignersFromProject(jTable1, jTable2);
+    }//GEN-LAST:event_jButton9ActionPerformed
 
     /**
      * @param args the command line arguments

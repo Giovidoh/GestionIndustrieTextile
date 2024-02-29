@@ -196,7 +196,7 @@ public class DatabaseOperation {
     }
 
     // Overload fungsi eksekusi query delete dengan where
-    public String queryDelete(String nomTable, String etat) {
+    public String queryDeleteWhere(String nomTable, String etat) {
 
         connexionDatabase();
         SQL = "DELETE FROM " + nomTable + " WHERE " + etat;

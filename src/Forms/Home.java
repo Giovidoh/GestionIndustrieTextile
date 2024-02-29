@@ -1127,7 +1127,7 @@ public class Home extends javax.swing.JFrame {
         // Vider le modèle
         tableModel.setRowCount(0);
 
-        // Vérifier s'il y a des utilisateurs enregistrés et les afficher dans la table
+        // Vérifier s'il y a des projets enregistrés et les afficher dans la table
         if (result.getRowCount() > 0) {
             for (int i = 0; i < result.getRowCount(); i++) {
 
@@ -1206,8 +1206,6 @@ public class Home extends javax.swing.JFrame {
                 Object contactEmp = result.getValueAt(i, 6).toString();
                 Object emailEmp = result.getValueAt(i, 7).toString();
                 Object identifiantEmp = result.getValueAt(i, 8).toString();
-
-                Object address = result.getValueAt(i, 3).toString();
 
                 ligne[0] = idEmp;
                 ligne[1] = surnameEmp + " " + firstnameEmp;
@@ -1290,12 +1288,16 @@ public class Home extends javax.swing.JFrame {
         // Vérifier si une ligne de la table est sélectionnée
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow != -1) {
-            // Changer la variable titre du formulaire de Projets
-            projetTitre = voirProjet;
-
-            // Ouvrir le formulaire pour voir le projet sélectionné
-            ViewProject view = new ViewProject(this, true);
-            view.setVisible(true);
+            try {
+                // Changer la variable titre du formulaire de Projets
+                projetTitre = voirProjet;
+                
+                // Ouvrir le formulaire pour voir le projet sélectionné
+                ViewProject view = new ViewProject(this, true);
+                view.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }else{
             // Envoyer un message d'alerte
             AlertWarningTitle = "Attention";
@@ -1306,33 +1308,45 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // Changer la variable titre du formulaire de Projets
-        projetTitre = ajouterProjet;
-
-        // Ouvrir le formulaire pour voir le projet sélectionné
-        ViewProject view = new ViewProject(this, true);
-        view.setVisible(true);
+        try {
+            // Changer la variable titre du formulaire de Projets
+            projetTitre = ajouterProjet;
+            
+            // Ouvrir le formulaire pour voir le projet sélectionné
+            ViewProject view = new ViewProject(this, true);
+            view.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // Changer la variable titre du formulaire de Projets
-        projetTitre = modifierProjet;
-
-        // Ouvrir le formulaire pour voir le projet sélectionné
-        ViewProject view = new ViewProject(this, true);
-        view.setVisible(true);
+        try {
+            // Changer la variable titre du formulaire de Projets
+            projetTitre = modifierProjet;
+            
+            // Ouvrir le formulaire pour voir le projet sélectionné
+            ViewProject view = new ViewProject(this, true);
+            view.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         // Vérifier si une ligne de la table est sélectionnée
         int selectedRow = jTable2.getSelectedRow();
         if (selectedRow != -1) {
-            // Changer la variable titre du formulaire des Employés
-            registerTitre = voirRegister;
-
-            // Ouvrir le formulaire pour voir l'employé sélectionné
-            Register register = new Register(this, true);
-            register.setVisible(true);
+            try {
+                // Changer la variable titre du formulaire des Employés
+                registerTitre = voirRegister;
+                
+                // Ouvrir le formulaire pour voir l'employé sélectionné
+                Register register = new Register(this, true);
+                register.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             // Envoyer un message d'alerte
             AlertWarningTitle = "Attention";
@@ -1343,35 +1357,43 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // Réinitialiser les variables statiques des données d'enregistrement
-        // d'un employé
-        id = "";
-        birthDate = "";
-        contact = "";
-        email = "";
-        firstname = "";
-        gender = "";
-        responsibility = "";
-        surname = "";
-
-        // Changer la variable titre du formulaire des Employés
-        registerTitre = ajouterRegister;
-
-        // Ouvrir le formulaire pour voir l'employé sélectionné
-        Register register = new Register(this, true);
-        register.setVisible(true);
+        try {
+            // Réinitialiser les variables statiques des données d'enregistrement
+            // d'un employé
+            id = "";
+            birthDate = "";
+            contact = "";
+            email = "";
+            firstname = "";
+            gender = "";
+            responsibility = "";
+            surname = "";
+            
+            // Changer la variable titre du formulaire des Employés
+            registerTitre = ajouterRegister;
+            
+            // Ouvrir le formulaire pour voir l'employé sélectionné
+            Register register = new Register(this, true);
+            register.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // Vérifier si une ligne de la table est sélectionnée
         int selectedRow = jTable2.getSelectedRow();
         if (selectedRow != -1) {
-            // Changer la variable titre du formulaire des Employés
-            registerTitre = modifierRegister;
-
-            // Ouvrir le formulaire pour voir l'employé sélectionné
-            Register register = new Register(this, true);
-            register.setVisible(true);
+            try {
+                // Changer la variable titre du formulaire des Employés
+                registerTitre = modifierRegister;
+                
+                // Ouvrir le formulaire pour voir l'employé sélectionné
+                Register register = new Register(this, true);
+                register.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             // Envoyer un message d'alerte
             AlertWarningTitle = "Attention";
