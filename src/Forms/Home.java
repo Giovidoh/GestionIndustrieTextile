@@ -55,6 +55,11 @@ public class Home extends javax.swing.JFrame {
     public Home() throws SQLException {
         initComponents();
         setLocationRelativeTo(null);
+        
+        // Statistiques
+        /*projectNumberCount();
+        projectNumberInProgressCount();
+        EmployeesNumber();*/
 
         // Cacher les messages d'erreur
         hideErrorMessages();
@@ -92,6 +97,15 @@ public class Home extends javax.swing.JFrame {
     protected String voirRegister = "Voir un employé";
     protected String ajouterRegister = "Enregistrer un employé";
     protected String modifierRegister = "Modifier un employé";
+    
+    // Nombre de projets
+    public static String projectsNumber = null;
+    
+    // Nombre de projets en cours
+    public static String projectsNumberInProgress = null;
+    
+    // Nombre d'employés
+    public static String EmployeesNumber = null;
 
     // END OF PROPERTIES
     /**
@@ -120,9 +134,6 @@ public class Home extends javax.swing.JFrame {
         jPanel8 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jPanel9 = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
@@ -179,7 +190,7 @@ public class Home extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(null));
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jButton1.setBackground(new java.awt.Color(153, 204, 255));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -363,41 +374,6 @@ public class Home extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel9.setBackground(new java.awt.Color(77, 157, 221));
-        jPanel9.setPreferredSize(new java.awt.Dimension(200, 150));
-
-        jLabel10.setFont(new java.awt.Font("Roboto", 0, 16)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setText("VENTES JOURNALIÈRES");
-
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel11.setText("21");
-        jLabel11.setFocusable(false);
-        jLabel11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(7, 7, 7)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(7, Short.MAX_VALUE))
-        );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addComponent(jLabel10)
-                .addGap(34, 34, 34)
-                .addComponent(jLabel11)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         jPanel10.setBackground(new java.awt.Color(77, 157, 221));
         jPanel10.setPreferredSize(new java.awt.Dimension(200, 150));
 
@@ -468,19 +444,17 @@ public class Home extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 636, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jSeparator1)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(126, Short.MAX_VALUE))
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 636, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jSeparator1)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(344, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -493,8 +467,7 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(69, Short.MAX_VALUE))
@@ -921,6 +894,70 @@ public class Home extends javax.swing.JFrame {
         jLabel17.setVisible(false);
         jLabel18.setVisible(false);
     }
+    
+    private void projectNumberCount() throws SQLException{
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+        
+        // Récupérer le nombre de projets
+        String nomTable = "projet";
+        String whereStatement = "deleted_at IS NULL";
+        ResultSet rs = operationDb.querySelectCountAllWhere(nomTable, whereStatement);
+        
+        if(rs.next()){
+            projectsNumber = rs.getString("nbre").toString();
+        }
+        
+        jLabel13.setText(projectsNumber);
+        
+        operationDb.closeconnexion();
+    }
+    
+    private void projectNumberInProgressCount() throws SQLException{
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+        
+        // Récupérer le nombre de projets
+        String nomTable = "projet";
+        String whereStatement = "deleted_at IS NULL"
+                            + " AND StatutProjet != \"" + ProjectStatuses.brouillon + "\"";
+        ResultSet rs = operationDb.querySelectCountAllWhere(nomTable, whereStatement);
+        
+        if(rs.next()){
+            projectsNumberInProgress = rs.getString("nbre").toString();
+        }
+        
+        jLabel9.setText(projectsNumberInProgress);
+        
+        operationDb.closeconnexion();
+    }
+    
+    private void EmployeesNumber() throws SQLException{
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+        
+        // Récupérer le nombre de projets
+        String nomTable = "employe";
+        String whereStatement = "deleted_at IS NULL";
+        ResultSet rs = operationDb.querySelectCountAllWhere(nomTable, whereStatement);
+        
+        if(rs.next()){
+            EmployeesNumber = rs.getString("nbre").toString();
+        }
+        
+        jLabel3.setText(EmployeesNumber);
+        
+        operationDb.closeconnexion();
+    }
 
     private void fillRespoCombos() throws SQLException {
         // Renseigner les informations de la bdd
@@ -932,8 +969,8 @@ public class Home extends javax.swing.JFrame {
         //// Récupérer les designers
         String nomTable = "employe";
         String whereStatement = "RespoEmp = \"Designer de mode\""
-                + " AND deleted_at IS NULL"
-                + " ORDER BY NomEmp, PrenomEmp ASC";
+                            + " AND deleted_at IS NULL"
+                            + " ORDER BY NomEmp, PrenomEmp ASC";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
 
         // Créer un modèle de données pour le JComboBox
@@ -1310,10 +1347,7 @@ public class Home extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // Réinitialiser les variables statiques des données d'enregistrement
         // d'un projet
-        selectedProjectId = "";
-        nom = "";
-        description = "";
-        statut = "";
+        ViewProject.clearProjectInfos();
         
         try {
             // Changer la variable titre du formulaire de Projets
@@ -1423,26 +1457,35 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        // Raffraîchir la liste des projets si le raffraîchissement est vrai
-        if (reloadProjectsTable) {
-            fillProjectsTable(jTable1);
-            reloadProjectsTable = false;
-        }
-
-        // Raffraîchir la liste des employés si le raffraîchissement est vrai
-        if (reloadEmployeesTable) {
-            fillEmployeesTable(jTable2);
-            reloadEmployeesTable = false;
-        }
-
-        // Raffraîchir les comboboxes des responsables
-        if (reloadResponsiblesCombos) {
-            try {
-                fillRespoCombos();
-                reloadResponsiblesCombos = false;
-            } catch (SQLException ex) {
-                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            // Raffraîchir la liste des projets si le raffraîchissement est vrai
+            if (reloadProjectsTable) {
+                fillProjectsTable(jTable1);
+                reloadProjectsTable = false;
             }
+            
+            // Raffraîchir la liste des employés si le raffraîchissement est vrai
+            if (reloadEmployeesTable) {
+                fillEmployeesTable(jTable2);
+                reloadEmployeesTable = false;
+            }
+            
+            // Raffraîchir les comboboxes des responsables
+            if (reloadResponsiblesCombos) {
+                try {
+                    fillRespoCombos();
+                    reloadResponsiblesCombos = false;
+                } catch (SQLException ex) {
+                    Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            // Raffraîchir les statistiques
+            projectNumberCount();
+            projectNumberInProgressCount();
+            EmployeesNumber();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_formWindowActivated
 
@@ -1596,8 +1639,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
@@ -1624,7 +1665,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;

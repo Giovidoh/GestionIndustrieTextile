@@ -6,6 +6,8 @@ package Forms;
 
 import Dao.ParametreDeConx;
 import Dao.DatabaseOperation;
+import static Forms.AlertSuccess.AlertSuccessMessage;
+import static Forms.AlertSuccess.AlertSuccessTitle;
 import static Forms.AlertWarning.AlertWarningMessage;
 import static Forms.AlertWarning.AlertWarningTitle;
 import java.sql.SQLException;
@@ -549,56 +551,72 @@ public class Register extends javax.swing.JDialog {
                 }
             }
         } else if (jButton1.getText().equals("Modifier")) {
-            // Si le bouton est "Modifier"
-
-            //// Modifier l'employé
-            // Renseigner les informations de la bdd
-            String url = ParametreDeConx.HOST_DB;
-            String username = ParametreDeConx.USERNAME_DB;
-            String password = ParametreDeConx.PASSWORD_DB;
-            DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-
-            // Faire la modification
-            String nomTable = "employe";
-            String whereStatement = "Id = \"" + id + "\" AND " + "deleted_at IS NULL";
-            String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "updated_at"};
-
-            String nomEmp = jTextField1.getText();
-            String prenomEmp = jTextField2.getText();
-            String dateNaisEmp = jTextField3.getText();
-            String genreEmp = "";
-            if (jRadioButton1.isSelected()) {
-                genreEmp = "F";
-            } else if (jRadioButton2.isSelected()) {
-                genreEmp = "M";
+            try {
+                // Si le bouton est "Modifier"
+                
+                //// Modifier l'employé
+                // Renseigner les informations de la bdd
+                String url = ParametreDeConx.HOST_DB;
+                String username = ParametreDeConx.USERNAME_DB;
+                String password = ParametreDeConx.PASSWORD_DB;
+                DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+                
+                // Faire la modification
+                String nomTable = "employe";
+                String whereStatement = "Id = \"" + id + "\" AND " + "deleted_at IS NULL";
+                String[] nomColonne = {"NomEmp", "PrenomEmp", "DateNaisEmp", "GenreEmp", "RespoEmp", "ContactEmp", "EmailEmp", "updated_at"};
+                
+                String nomEmp = jTextField1.getText();
+                String prenomEmp = jTextField2.getText();
+                String dateNaisEmp = jTextField3.getText();
+                String genreEmp = "";
+                if (jRadioButton1.isSelected()) {
+                    genreEmp = "F";
+                } else if (jRadioButton2.isSelected()) {
+                    genreEmp = "M";
+                }
+                String respoEmp = (String) jComboBox1.getSelectedItem();
+                String contactEmp = jFormattedTextField1.getText();
+                String emailEmp = jFormattedTextField2.getText();
+                
+                // Date et heure actuelle
+                ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+                
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                
+                String currentDateTimeFormattedString = currentDateTime.format(formatter);
+                
+                String[] contenuTableau = {nomEmp, prenomEmp, dateNaisEmp, genreEmp, respoEmp, contactEmp, emailEmp, currentDateTimeFormattedString};
+                
+                // Appliquer la suppression logique
+                String rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau, whereStatement);
+                
+                // Fermer la connexion à la bdd
+                operationDb.closeconnexion();
+                
+                // Message de succès de la modification de l'utilisateur
+                AlertSuccessTitle = "Enregistré";
+                AlertSuccessMessage = "Utilisateur enregistré avec succès !";
+                
+                // Raffraîchir la liste des employés
+                Home.reloadEmployeesTable = true;
+                
+                // Vider les informations de l'employé
+                clearEmployeeInfos();
+                
+                // Retourner à la liste des employés
+                super.dispose();
+                
+                // Afficher le message de succès
+                Home home = new Home();
+                AlertSuccess alert = new AlertSuccess(home, true);
+                alert.setVisible(true);
+                
+                // Retourner à la liste des employés
+                super.dispose();
+            } catch (SQLException ex) {
+                Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
             }
-            String respoEmp = (String) jComboBox1.getSelectedItem();
-            String contactEmp = jFormattedTextField1.getText();
-            String emailEmp = jFormattedTextField2.getText();
-
-            // Date et heure actuelle
-            ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-            String currentDateTimeFormattedString = currentDateTime.format(formatter);
-
-            String[] contenuTableau = {nomEmp, prenomEmp, dateNaisEmp, genreEmp, respoEmp, contactEmp, emailEmp, currentDateTimeFormattedString};
-
-            // Appliquer la suppression logique
-            String rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau, whereStatement);
-
-            // Message de succès de la modification de l'utilisateur
-            JOptionPane.showMessageDialog(this, "Utilisateur modifié avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
-
-            // Raffraîchir la liste des employés
-            Home.reloadEmployeesTable = true;
-
-            // Vider les informations de l'employé
-            clearEmployeeInfos();
-
-            // Retourner à la liste des employés
-            super.dispose();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -9,8 +9,6 @@ import Dao.ParametreDeConx;
 import Dao.ResultSetTableModel;
 import static Forms.AlertSuccess.AlertSuccessMessage;
 import static Forms.AlertSuccess.AlertSuccessTitle;
-import static Forms.CreateAccount.id;
-import static Forms.CreateAccount.pwd;
 
 import static Forms.Home.reloadProjectsTable;
 import static Forms.Login.UserId;
@@ -215,7 +213,7 @@ public class ViewProject extends javax.swing.JDialog {
                         .addComponent(jTextField1)
                         .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -308,9 +306,22 @@ public class ViewProject extends javax.swing.JDialog {
             // Modifier le texte du bouton d'enregistrement à "Ajouter"
             jButton1.setText("Ajouter");
         } else if (jLabel1.getText().equals(modifierTitre)) {
+            // Si le statut est publié, bloquer le champ de sélection de statut
+            if (statut.equals(ProjectStatuses.publie)) {
+                jComboBox1.setEnabled(false);
+            }
             // Modifier le texte du bouton d'enregistrement à "Modifier"
             jButton1.setText("Modifier");
         }
+    }
+    
+    
+    public static void clearProjectInfos() {
+        // Vider les informations de l'employé
+        selectedProjectId = "";
+        nom = "";
+        description = "";
+        statut = "";
     }
 
     private void fillFieldsIfExist() throws SQLException {
@@ -371,6 +382,33 @@ public class ViewProject extends javax.swing.JDialog {
         return found;
     }
 
+    private Boolean verifyIfProjectNameExistsExceptCurrentProject(String nom) {
+        Boolean found = false;
+
+        // Renseigner les informations de la bdd
+        String url = ParametreDeConx.HOST_DB;
+        String username = ParametreDeConx.USERNAME_DB;
+        String password = ParametreDeConx.PASSWORD_DB;
+        DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+        // Vérifier si un projet avec le même nom existe déjà sauf le projet sélectionné pour la modification
+        String nomTable = "projet";
+        String whereStatement1 = "NomProjet = \"" + nom
+                + "\" AND deleted_at IS NULL";
+        String whereStatement2 = "Id = \"" + selectedProjectId
+                + "\" AND deleted_at IS NULL";
+        ResultSet rs = operationDb.querySelectAllWhereExcept(nomTable, whereStatement1, whereStatement2);
+
+        ResultSetTableModel result = new ResultSetTableModel(rs);
+        if (result.getRowCount() > 0) {
+            found = true;
+        }
+
+        operationDb.closeconnexion();
+
+        return found;
+    }
+
     private static String saveImageToDirectory(File imageFile, File destinationDir) throws IOException {
         // Vérifie si le dossier de destination existe, sinon le crée
         if (!destinationDir.exists()) {
@@ -408,9 +446,19 @@ public class ViewProject extends javax.swing.JDialog {
 
         try {
             String nomTable = "image";
-            String[] nomColonne = {"Contenu", "IdEmploye"};
+            String[] nomColonne = {"Contenu", "IdProjet", "IdEmploye"};
 
-            String[] contenuTableau = {savedImagePath.replace("\\", "/"), UserId};
+            // Récupérer l'id du projet
+            String projetId = null;
+            String nomTable3 = "projet";
+            String whereStatement3 = "NomProjet = \"" + nom + "\""
+                    + " AND deleted_at IS NULL";
+            ResultSet rs3 = operationDb.querySelectAllWhere(nomTable3, whereStatement3);
+            if (rs3.next()) {
+                projetId = rs3.getString("Id");
+            }
+
+            String[] contenuTableau = {savedImagePath.replace("\\", "/"), projetId, UserId};
 
             operationDb.queryInsertPrecise(nomTable, nomColonne, contenuTableau);
 
@@ -455,7 +503,6 @@ public class ViewProject extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
         // Si le bouton est "Enregistrer"
         if (jButton1.getText().equals("Ajouter")) {
             // Récupérer les informations du projet
@@ -503,7 +550,7 @@ public class ViewProject extends javax.swing.JDialog {
                             String projetId = null;
                             String nomTable3 = "projet";
                             String whereStatement3 = "NomProjet = \"" + nom + "\""
-                                                + " AND deleted_at IS NULL";
+                                    + " AND deleted_at IS NULL";
                             ResultSet rs3 = operationDb.querySelectAllWhere(nomTable3, whereStatement3);
                             if (rs3.next()) {
                                 projetId = rs3.getString("Id");
@@ -555,6 +602,10 @@ public class ViewProject extends javax.swing.JDialog {
                         jTextField1.setText("");
                         jTextArea1.setText("");
                         jTextField1.requestFocusInWindow();
+                        
+                        // Réinitialiser les variables statiques des données d'enregistrement
+                        // d'un projet
+                        ViewProject.clearProjectInfos();
 
                         // Raffraîchir la liste des projets
                         reloadProjectsTable = true;
@@ -578,6 +629,129 @@ public class ViewProject extends javax.swing.JDialog {
             }
         } else if (jButton1.getText().equals("Modifier")) {
             // Si le bouton est "Modifier" faire la modification du projet sélectionné
+            // Récupérer les informations du projet
+            Boolean retrieve = retrieveFormData();
+
+            if (retrieve) {
+                // Vérifier si un même nom de projet existe déjà
+                Boolean verify = verifyIfProjectNameExistsExceptCurrentProject(nom);
+                if (verify) {
+                    // Afficher le message d'erreur d'un nom déjà existant
+                    jLabel8.setVisible(true);
+                } else {
+                    // Renseigner les informations de la bdd
+                    String url = ParametreDeConx.HOST_DB;
+                    String username = ParametreDeConx.USERNAME_DB;
+                    String password = ParametreDeConx.PASSWORD_DB;
+                    DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
+
+                    try {
+                        //// Modification du projet
+                        String nomTable = "projet";
+                        String[] nomColonne = {"NomProjet", "DescriptionProjet", "StatutProjet", "IdCreateur", "updated_at"};
+                        String whereStatement = "Id = \"" + selectedProjectId + "\""
+                                            + " AND deleted_at IS NULL";
+
+                        // Obtenir la date et l'heure actuelles avec un fuseau horaire spécifique (par exemple, UTC)
+                        ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                        String currentDateTimeFormattedString = currentDateTime.format(formatter);
+
+                        String[] contenuTableau = {nom, description, statut, Login.UserId, currentDateTimeFormattedString};
+
+                        System.out.println(Login.UserId + " " + Login.UserName);
+
+                        // Appliquer la requête d'insertion
+                        String modifyProject = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau, whereStatement);
+                        //// Fin de la modification du projet
+
+                        //// Enregistrer le responsable designer par défaut sur le projet si le statut est "Publié"
+                        if (statut.equals(ProjectStatuses.publie) && jComboBox1.isEnabled()) {
+                            String nomTable2 = "designer_projet";
+                            String[] nomColonne2 = {"IdProjet", "IdDesigner"};
+
+                            // Récupérer l'id du projet
+                            String projetId = null;
+                            String nomTable3 = "projet";
+                            String whereStatement3 = "NomProjet = \"" + nom + "\""
+                                    + " AND deleted_at IS NULL";
+                            ResultSet rs3 = operationDb.querySelectAllWhere(nomTable3, whereStatement3);
+                            if (rs3.next()) {
+                                projetId = rs3.getString("Id");
+                            }
+
+                            // Récupérer l'id du responsable des designers
+                            String designerResponsibleId = null;
+                            String nomTable4 = "employe";
+                            String whereStatement4 = "RespoEmp = \"" + EmployeesResponsibilities.designer + "\""
+                                    + " AND Responsable = 1";
+                            ResultSet rs4 = operationDb.querySelectAllWhere(nomTable4, whereStatement4);
+                            if (rs4.next()) {
+                                designerResponsibleId = rs4.getString("Id");
+                            }
+
+                            String[] contenuTableau2 = {projetId, designerResponsibleId};
+
+                            // Affecter le responsable designer au projet
+                            String addDesignerResponsibleToProject = operationDb.queryInsertPrecise(nomTable2, nomColonne2, contenuTableau2);
+                        }
+                        //// Fin Enregistrer le responsable designer par défaut sur le projet si le statut est "Publié"
+
+                        //// Enregistrement des images liées au projet
+                        if (images.length > 0) {
+                            for (File image : images) {
+                                // Enregistrer les images dans le dossier "projectimages"
+                                // Et enregistrer les chemins des images dans la bdd
+                                String destinationFolder = "F:/Cours 3e année/JAVA/Projet/GestionIndustrieTextile/src/projectimages";
+
+                                File destinationDir = new File(destinationFolder);
+
+                                try {
+                                    String savedImagePath;
+                                    // Sauvegarder l'image dans le dossier
+                                    savedImagePath = saveImageToDirectory(image, destinationDir);
+                                    // Sauvegarder le chemin de l'image dans la bdd
+                                    saveImagePathToDatabase(savedImagePath);
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                } catch (IOException ex) {
+                                    Logger.getLogger(ViewProject.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+
+                            }
+                        }
+                        //// Fin Enregistrement des images liées au projet
+
+                        // Raffraîchir la liste des projets
+                        reloadProjectsTable = true;
+                        
+                        // Réinitialiser les variables statiques des données d'enregistrement
+                        // d'un projet
+                        ViewProject.clearProjectInfos();
+
+                        // Message de succès de l'enregistrement du projet
+                        AlertSuccessTitle = "Enregistré";
+                        AlertSuccessMessage = "Projet modifié avec succès !";
+
+                        // Afficher le message de succès de modification
+                        Home home = new Home();
+                        AlertSuccess alert = new AlertSuccess(home, true);
+                        alert.setVisible(true);
+                        
+                        // Fermer le formulaire de modification de projet
+                        super.dispose();
+
+                        // Fermer la connexion à la bdd
+                        operationDb.closeconnexion();
+                    } catch (SQLException ex) {
+                        operationDb.closeconnexion();
+                        Logger.getLogger(ViewProject.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            }
         }
 
     }//GEN-LAST:event_jButton1ActionPerformed

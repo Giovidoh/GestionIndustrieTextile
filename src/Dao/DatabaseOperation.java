@@ -105,6 +105,23 @@ public class DatabaseOperation {
 
     }
 
+    public ResultSet querySelectAllWhereExcept(String nomTable, String etat1, String etat2) {
+
+        connexionDatabase();
+        SQL = "SELECT * FROM " + nomTable + " WHERE " + etat1
+            + " EXCEPT SELECT * FROM " + nomTable + " WHERE " + etat2;
+        return this.executionQuery(SQL);
+
+    }
+
+    public ResultSet querySelectCountAllWhere(String nomTable, String etat) {
+
+        connexionDatabase();
+        SQL = "SELECT COUNT(*) AS nbre FROM " + nomTable + " WHERE " + etat;
+        return this.executionQuery(SQL);
+
+    }
+
     // choisir une colonne d une table
     public ResultSet querySelect(String[] nomColonne, String nomTable) {
 
@@ -176,7 +193,7 @@ public class DatabaseOperation {
         SQL = "UPDATE " + nomTable + " SET ";
 
         for (i = 0; i <= nomColonne.length - 1; i++) {
-            SQL += nomColonne[i] + "='" + contenuTableau[i] + "'";
+            SQL += nomColonne[i] + "=\"" + contenuTableau[i] + "\"";
             if (i < nomColonne.length - 1) {
                 SQL += ",";
             }
