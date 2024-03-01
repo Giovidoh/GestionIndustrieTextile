@@ -605,7 +605,7 @@ public class ViewProject extends javax.swing.JDialog {
                         
                         // Réinitialiser les variables statiques des données d'enregistrement
                         // d'un projet
-                        ViewProject.clearProjectInfos();
+                        clearProjectInfos();
 
                         // Raffraîchir la liste des projets
                         reloadProjectsTable = true;

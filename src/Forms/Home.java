@@ -47,20 +47,21 @@ import static Forms.ViewProject.images;
  *
  * @author HP-PC
  */
-public class Home extends javax.swing.JFrame {
+public final class Home extends javax.swing.JFrame {
 
     /**
      * Creates new form Home
+     *
+     * @throws java.sql.SQLException
      */
     public Home() throws SQLException {
         initComponents();
         setLocationRelativeTo(null);
-        
+
         // Statistiques
         /*projectNumberCount();
         projectNumberInProgressCount();
         EmployeesNumber();*/
-
         // Cacher les messages d'erreur
         hideErrorMessages();
 
@@ -97,13 +98,13 @@ public class Home extends javax.swing.JFrame {
     protected String voirRegister = "Voir un employé";
     protected String ajouterRegister = "Enregistrer un employé";
     protected String modifierRegister = "Modifier un employé";
-    
+
     // Nombre de projets
     public static String projectsNumber = null;
-    
+
     // Nombre de projets en cours
     public static String projectsNumberInProgress = null;
-    
+
     // Nombre d'employés
     public static String EmployeesNumber = null;
 
@@ -552,6 +553,11 @@ public class Home extends javax.swing.JFrame {
         jButton6.setText("SUPPRIMER");
         jButton6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton6.setFocusPainted(false);
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton10.setBackground(new java.awt.Color(204, 204, 255));
         jButton10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -894,68 +900,68 @@ public class Home extends javax.swing.JFrame {
         jLabel17.setVisible(false);
         jLabel18.setVisible(false);
     }
-    
-    private void projectNumberCount() throws SQLException{
+
+    private void projectNumberCount() throws SQLException {
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
         String password = ParametreDeConx.PASSWORD_DB;
         DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-        
+
         // Récupérer le nombre de projets
         String nomTable = "projet";
         String whereStatement = "deleted_at IS NULL";
         ResultSet rs = operationDb.querySelectCountAllWhere(nomTable, whereStatement);
-        
-        if(rs.next()){
+
+        if (rs.next()) {
             projectsNumber = rs.getString("nbre").toString();
         }
-        
+
         jLabel13.setText(projectsNumber);
-        
+
         operationDb.closeconnexion();
     }
-    
-    private void projectNumberInProgressCount() throws SQLException{
+
+    private void projectNumberInProgressCount() throws SQLException {
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
         String password = ParametreDeConx.PASSWORD_DB;
         DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-        
+
         // Récupérer le nombre de projets
         String nomTable = "projet";
         String whereStatement = "deleted_at IS NULL"
-                            + " AND StatutProjet != \"" + ProjectStatuses.brouillon + "\"";
+                + " AND StatutProjet != \"" + ProjectStatuses.brouillon + "\"";
         ResultSet rs = operationDb.querySelectCountAllWhere(nomTable, whereStatement);
-        
-        if(rs.next()){
+
+        if (rs.next()) {
             projectsNumberInProgress = rs.getString("nbre").toString();
         }
-        
+
         jLabel9.setText(projectsNumberInProgress);
-        
+
         operationDb.closeconnexion();
     }
-    
-    private void EmployeesNumber() throws SQLException{
+
+    private void EmployeesNumber() throws SQLException {
         // Renseigner les informations de la bdd
         String url = ParametreDeConx.HOST_DB;
         String username = ParametreDeConx.USERNAME_DB;
         String password = ParametreDeConx.PASSWORD_DB;
         DatabaseOperation operationDb = new DatabaseOperation(url, username, password);
-        
+
         // Récupérer le nombre de projets
         String nomTable = "employe";
         String whereStatement = "deleted_at IS NULL";
         ResultSet rs = operationDb.querySelectCountAllWhere(nomTable, whereStatement);
-        
-        if(rs.next()){
+
+        if (rs.next()) {
             EmployeesNumber = rs.getString("nbre").toString();
         }
-        
+
         jLabel3.setText(EmployeesNumber);
-        
+
         operationDb.closeconnexion();
     }
 
@@ -969,8 +975,8 @@ public class Home extends javax.swing.JFrame {
         //// Récupérer les designers
         String nomTable = "employe";
         String whereStatement = "RespoEmp = \"Designer de mode\""
-                            + " AND deleted_at IS NULL"
-                            + " ORDER BY NomEmp, PrenomEmp ASC";
+                + " AND deleted_at IS NULL"
+                + " ORDER BY NomEmp, PrenomEmp ASC";
         ResultSet rs = operationDb.querySelectAllWhere(nomTable, whereStatement);
 
         // Créer un modèle de données pour le JComboBox
@@ -1067,7 +1073,7 @@ public class Home extends javax.swing.JFrame {
             jComboBox3.setSelectedItem(nom);
         }
         //// Fin Récupérer les fabricants
-        
+
         operationDb.closeconnexion();
     }
 
@@ -1110,7 +1116,7 @@ public class Home extends javax.swing.JFrame {
             String[] contenuTableau1 = {"1"};
             String whereStatement1 = "NomEmp = \"" + nom
                     + "\" AND PrenomEmp = \"" + prenom
-                    + "\" AND RespoEmp = \"Designer de mode\""
+                    + "\" AND RespoEmp = \"" + EmployeesResponsibilities.designer + "\""
                     + " AND deleted_at IS NULL";
             rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau1, whereStatement1);
             // Fin Responsable designer
@@ -1122,7 +1128,7 @@ public class Home extends javax.swing.JFrame {
             nomTable = "employe";
             String whereStatement2 = "NomEmp = \"" + nom
                     + "\" AND PrenomEmp = \"" + prenom
-                    + "\" AND RespoEmp = \"Styliste\""
+                    + "\" AND RespoEmp = \"" + EmployeesResponsibilities.styliste + "\""
                     + " AND deleted_at IS NULL";
             rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau1, whereStatement2);
             // Fin Responsable styliste
@@ -1134,11 +1140,17 @@ public class Home extends javax.swing.JFrame {
             nomTable = "employe";
             String whereStatement3 = "NomEmp = \"" + nom
                     + "\" AND PrenomEmp = \"" + prenom
-                    + "\" AND RespoEmp = \"Fabricant\""
+                    + "\" AND RespoEmp = \"" + EmployeesResponsibilities.fabricant + "\""
                     + " AND deleted_at IS NULL";
             rs = operationDb.queryUpdate(nomTable, nomColonne, contenuTableau1, whereStatement3);
             // Fin Responsable fabricant
             //// Fin Enregistrer les responsables des différents groupes
+            
+            // Message de succès de l'enregistrement
+            AlertSuccessTitle = "Enregistrement effectué";
+            AlertSuccessMessage = "Responsables enregistrés avec succès !";
+            AlertSuccess alert = new AlertSuccess(this, true);
+            alert.setVisible(true);
 
             operationDb.closeconnexion();
         }
@@ -1204,7 +1216,7 @@ public class Home extends javax.swing.JFrame {
             table.setModel(tableModel);
 
         }
-        
+
         operationDb.closeconnexion();
     }
 
@@ -1276,7 +1288,7 @@ public class Home extends javax.swing.JFrame {
             table.setModel(tableModel);
 
         }
-        
+
         operationDb.closeconnexion();
     }
 
@@ -1328,14 +1340,14 @@ public class Home extends javax.swing.JFrame {
             try {
                 // Changer la variable titre du formulaire de Projets
                 projetTitre = voirProjet;
-                
+
                 // Ouvrir le formulaire pour voir le projet sélectionné
                 ViewProject view = new ViewProject(this, true);
                 view.setVisible(true);
             } catch (SQLException ex) {
                 Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else{
+        } else {
             // Envoyer un message d'alerte
             AlertWarningTitle = "Attention";
             AlertWarningMessage = "Veuillez choisir un projet pour voir ses informations !";
@@ -1348,11 +1360,11 @@ public class Home extends javax.swing.JFrame {
         // Réinitialiser les variables statiques des données d'enregistrement
         // d'un projet
         ViewProject.clearProjectInfos();
-        
+
         try {
             // Changer la variable titre du formulaire de Projets
             projetTitre = ajouterProjet;
-            
+
             // Ouvrir le formulaire pour voir le projet sélectionné
             ViewProject view = new ViewProject(this, true);
             view.setVisible(true);
@@ -1362,15 +1374,26 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        try {
-            // Changer la variable titre du formulaire de Projets
-            projetTitre = modifierProjet;
-            
-            // Ouvrir le formulaire pour voir le projet sélectionné
-            ViewProject view = new ViewProject(this, true);
-            view.setVisible(true);
-        } catch (SQLException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+
+        // Vérifier si une ligne de la table est sélectionnée
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            try {
+                // Changer la variable titre du formulaire de Projets
+                projetTitre = modifierProjet;
+
+                // Ouvrir le formulaire pour voir le projet sélectionné
+                ViewProject view = new ViewProject(this, true);
+                view.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            // Envoyer un message d'alerte
+            AlertWarningTitle = "Attention";
+            AlertWarningMessage = "Veuillez choisir le projet à modifier !";
+            AlertWarning alert = new AlertWarning(this, true);
+            alert.setVisible(true);
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -1381,7 +1404,7 @@ public class Home extends javax.swing.JFrame {
             try {
                 // Changer la variable titre du formulaire des Employés
                 registerTitre = voirRegister;
-                
+
                 // Ouvrir le formulaire pour voir l'employé sélectionné
                 Register register = new Register(this, true);
                 register.setVisible(true);
@@ -1409,10 +1432,10 @@ public class Home extends javax.swing.JFrame {
             gender = "";
             responsibility = "";
             surname = "";
-            
+
             // Changer la variable titre du formulaire des Employés
             registerTitre = ajouterRegister;
-            
+
             // Ouvrir le formulaire pour voir l'employé sélectionné
             Register register = new Register(this, true);
             register.setVisible(true);
@@ -1428,7 +1451,7 @@ public class Home extends javax.swing.JFrame {
             try {
                 // Changer la variable titre du formulaire des Employés
                 registerTitre = modifierRegister;
-                
+
                 // Ouvrir le formulaire pour voir l'employé sélectionné
                 Register register = new Register(this, true);
                 register.setVisible(true);
@@ -1463,13 +1486,13 @@ public class Home extends javax.swing.JFrame {
                 fillProjectsTable(jTable1);
                 reloadProjectsTable = false;
             }
-            
+
             // Raffraîchir la liste des employés si le raffraîchissement est vrai
             if (reloadEmployeesTable) {
                 fillEmployeesTable(jTable2);
                 reloadEmployeesTable = false;
             }
-            
+
             // Raffraîchir les comboboxes des responsables
             if (reloadResponsiblesCombos) {
                 try {
@@ -1479,7 +1502,7 @@ public class Home extends javax.swing.JFrame {
                     Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             // Raffraîchir les statistiques
             projectNumberCount();
             projectNumberInProgressCount();
@@ -1527,7 +1550,7 @@ public class Home extends javax.swing.JFrame {
             contact = contactEmp;
             email = emailEmp;
         }
-        
+
         operationDb.closeconnexion();
     }//GEN-LAST:event_jTable2MousePressed
 
@@ -1545,8 +1568,8 @@ public class Home extends javax.swing.JFrame {
             AlertWarning alert = new AlertWarning(this, true);
             alert.setVisible(true);
         }
-        
-        
+
+
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
@@ -1560,12 +1583,6 @@ public class Home extends javax.swing.JFrame {
         try {
             // Enregistrer les responsables
             saveResponsibles();
-
-            // Message de succès de l'enregistrement
-            AlertSuccessTitle = "Enregistrement effectué";
-            AlertSuccessMessage = "Responsables enregistrés avec succès !";
-            AlertSuccess alert = new AlertSuccess(this, true);
-            alert.setVisible(true);
         } catch (SQLException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1574,12 +1591,28 @@ public class Home extends javax.swing.JFrame {
     private void jTable1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MousePressed
         // Récupérer les informations du projet
         int selectedRow = jTable1.getSelectedRow();
-        
+
         selectedProjectId = jTable1.getValueAt(selectedRow, 0).toString();
         nom = jTable1.getValueAt(selectedRow, 1).toString();
         description = jTable1.getValueAt(selectedRow, 2).toString();
         statut = jTable1.getValueAt(selectedRow, 3).toString();
     }//GEN-LAST:event_jTable1MousePressed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // Vérifier si une ligne de la table est sélectionnée
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            // Demander la confirmation de suppression de l'employé
+            DeleteProject delete = new DeleteProject(this, true);
+            delete.setVisible(true);
+        } else {
+            // Envoyer un message d'alerte
+            AlertWarningTitle = "Attention";
+            AlertWarningMessage = "Veuillez choisir le projet à supprimer !";
+            AlertWarning alert = new AlertWarning(this, true);
+            alert.setVisible(true);
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -8,7 +8,9 @@ import Dao.DatabaseOperation;
 import Dao.ParametreDeConx;
 import static Forms.ViewProject.nom;
 import static Forms.ViewProject.selectedProjectId;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -50,16 +52,30 @@ public class ShowProjectImages extends javax.swing.JDialog {
         gbc.gridy = 0;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        for (String path : imagePaths) {
+        if (imagePaths.length == 0) {
             JLabel label = new JLabel();
-            ImageIcon icon = new ImageIcon(path);
-            Image image = icon.getImage();
-            Image scaledImage = getScaledImage(image, 800, 500); // Redimensionner l'image pour l'affichage initial
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            label.setIcon(scaledIcon);
-            label.setPreferredSize(new Dimension(800, 500)); // Définir la taille préférée du JLabel
+            label.setText("Aucune image associée à ce projet !");
+            
+            // Définir le font et le style du message
+            Font font = new Font("Arial", Font.BOLD, 20);
+            label.setFont(font);
+            
+            // Définir la couleur du message
+            label.setForeground(Color.GRAY);
+            
             panel.add(label, gbc);
-            gbc.gridy++;
+        } else {
+            for (String path : imagePaths) {
+                JLabel label = new JLabel();
+                ImageIcon icon = new ImageIcon(path);
+                Image image = icon.getImage();
+                Image scaledImage = getScaledImage(image, 800, 500); // Redimensionner l'image pour l'affichage initial
+                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                label.setIcon(scaledIcon);
+                label.setPreferredSize(new Dimension(800, 500)); // Définir la taille préférée du JLabel
+                panel.add(label, gbc);
+                gbc.gridy++;
+            }
         }
 
         getContentPane().add(scrollPane);
@@ -67,7 +83,6 @@ public class ShowProjectImages extends javax.swing.JDialog {
     }
 
     // FUNCTIONS
-    
     private Image getScaledImage(Image srcImg, int width, int height) {
         int originalWidth = srcImg.getWidth(null);
         int originalHeight = srcImg.getHeight(null);
@@ -112,7 +127,7 @@ public class ShowProjectImages extends javax.swing.JDialog {
                 imagePathList.add(rs.getString("Contenu"));
             }
             imagePaths = imagePathList.toArray(String[]::new);
-            
+
             // Fermer les ressources JDBC
             operationDb.closeconnexion();
         } catch (SQLException e) {

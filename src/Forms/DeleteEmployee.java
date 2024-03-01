@@ -39,6 +39,18 @@ public class DeleteEmployee extends javax.swing.JDialog {
         
         changeDeletionMessage();
     }
+    
+    // PROPERTIES
+    
+    // END OF PROPERTIES
+    
+    // FUNCTIONS
+
+    private void changeDeletionMessage(){
+        jLabel2.setText("Employé : " + surname + " " + firstname);
+    }
+    
+    // END OF FUNCTIONS
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -66,8 +78,9 @@ public class DeleteEmployee extends javax.swing.JDialog {
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Roboto Medium", 1, 24)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Voulez-vous vraiment supprimer ?");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(99, 6, -1, -1));
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 10, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Roboto Medium", 0, 18)); // NOI18N
         jLabel2.setText("Employé : Nom & Prénoms");
@@ -131,13 +144,7 @@ public class DeleteEmployee extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    // FUNCTIONS
     
-    private void changeDeletionMessage(){
-        jLabel2.setText("Employé : " + surname + " " + firstname);
-    }
-    
-    // END OF FUNCTIONS
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Fermer le modal de suppression
         super.dispose();
@@ -192,9 +199,6 @@ public class DeleteEmployee extends javax.swing.JDialog {
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    // FUNCTIONS
-    
-    // END OF FUNCTIONS
     /**
      * @param args the command line arguments
      */
@@ -220,6 +224,12 @@ public class DeleteEmployee extends javax.swing.JDialog {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(DeleteEmployee.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
